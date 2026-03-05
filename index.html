@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SNAKE</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0d0d0d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Courier New', monospace;
+      color: #39ff14;
+      user-select: none;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      letter-spacing: 0.4em;
+      text-shadow: 0 0 10px #39ff14, 0 0 30px #39ff14, 0 0 60px #39ff14;
+      margin-bottom: 12px;
+    }
+
+    #score-panel {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      align-items: center;
+    }
+
+    .score-item span { color: #fff; text-shadow: 0 0 8px #39ff14; }
+
+    #combo-display {
+      display: none;
+      font-size: 0.8rem;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+      letter-spacing: 0.1em;
+      border: 1px solid #ffd700;
+      padding: 1px 8px;
+      border-radius: 3px;
+      box-shadow: 0 0 6px #ffd700;
+      animation: comboPulse 0.4s ease-out;
+    }
+
+    @keyframes comboPulse {
+      0% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #daily-banner {
+      display: none;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      color: #ffd700;
+      text-shadow: 0 0 8px #ffd700;
+      margin-bottom: 6px;
+    }
+
+    /* Effect bar */
+    #effect-bar {
+      height: 28px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      justify-content: center;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .effect-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 3px;
+      border: 1px solid currentColor;
+    }
+
+    .effect-pill.speed   { color: #ffd700; box-shadow: 0 0 6px #ffd700; }
+    .effect-pill.nowalls { color: #00e5ff; box-shadow: 0 0 6px #00e5ff; }
+    .effect-pill.ghost   { color: #bf5fff; box-shadow: 0 0 6px #bf5fff; }
+
+    .effect-track {
+      width: 60px; height: 5px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px; overflow: hidden;
+    }
+
+    .effect-fill { height: 100%; border-radius: 2px; transition: width 0.1s linear; }
+    .effect-pill.speed   .effect-fill { background: #ffd700; }
+    .effect-pill.nowalls .effect-fill { background: #00e5ff; }
+    .effect-pill.ghost   .effect-fill { background: #bf5fff; }
+
+    @keyframes wallFlash {
+      0%, 100% {
+        border-color: #39ff14;
+        box-shadow: 0 0 15px #39ff14, 0 0 40px rgba(57,255,20,0.3), inset 0 0 15px rgba(57,255,20,0.05);
+      }
+      50% {
+        border-color: #ff2a6d;
+        box-shadow: 0 0 20px #ff2a6d, 0 0 50px rgba(255,42,109,0.4), inset 0 0 15px rgba(255,42,109,0.08);
+      }
+    }
+
+    #canvas-wrapper {
+      position: relative;
+      border: 2px solid #39ff14;
+      box-shadow: 0 0 15px #39ff14, 0 0 40px rgba(57,255,20,0.3), inset 0 0 15px rgba(57,255,20,0.05);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    #canvas-wrapper.wall-active {
+      border-color: #ff2a6d;
+      box-shadow: 0 0 20px #ff2a6d, 0 0 50px rgba(255,42,109,0.5), inset 0 0 15px rgba(255,42,109,0.1);
+    }
+
+    #canvas-wrapper.wall-warning {
+      animation: wallFlash 0.6s ease-in-out infinite;
+    }
+
+    #canvas-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    canvas { display: block; }
+
+    .overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: rgba(13,13,13,0.88);
+      z-index: 20; gap: 12px;
+    }
+
+    .overlay h2 {
+      font-size: 1.8rem;
+      letter-spacing: 0.3em;
+      text-shadow: 0 0 10px #39ff14, 0 0 30px #39ff14;
+    }
+
+    .overlay p {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      color: #aaa;
+      text-align: center;
+      line-height: 1.9;
+    }
+
+    .overlay .big-score {
+      font-size: 2.5rem;
+      color: #ff2a6d;
+      text-shadow: 0 0 10px #ff2a6d, 0 0 30px #ff2a6d;
+      letter-spacing: 0.2em;
+    }
+
+    .overlay .hs-label {
+      font-size: 0.8rem;
+      color: #ffd700;
+      text-shadow: 0 0 8px #ffd700;
+      letter-spacing: 0.1em;
+    }
+
+    .overlay .daily-badge {
+      font-size: 0.75rem;
+      color: #ffd700;
+      border: 1px solid #ffd700;
+      padding: 2px 10px;
+      border-radius: 3px;
+      box-shadow: 0 0 8px #ffd700;
+      letter-spacing: 0.12em;
+    }
+
+    .hidden { display: none !important; }
+
+    #level-bar {
+      margin-top: 10px;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: #888;
+    }
+
+    #level-bar .level-pip {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border: 1px solid #39ff14;
+      margin: 0 2px;
+      vertical-align: middle;
+    }
+
+    #level-bar .level-pip.active {
+      background: #39ff14;
+      box-shadow: 0 0 6px #39ff14;
+    }
+
+    #legend {
+      margin-top: 10px;
+      font-size: 0.62rem;
+      letter-spacing: 0.06em;
+      color: #555;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 420px;
+    }
+
+    #legend span { display: flex; align-items: center; gap: 4px; }
+
+    /* ── Mobile ── */
+    canvas, #canvas-wrapper { touch-action: none; }
+    body { -webkit-tap-highlight-color: transparent; }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 1.6rem; margin-bottom: 6px; }
+      #score-panel { gap: 14px; font-size: 0.75rem; }
+      #legend { font-size: 0.55rem; gap: 8px; max-width: 95vw; }
+      #effect-bar { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>SNAKE</h1>
+
+  <div id="score-panel">
+    <div class="score-item">SCORE: <span id="score-display">0</span></div>
+    <div class="score-item"><span id="hs-label">BEST:</span> <span id="high-score-display">0</span></div>
+    <div class="score-item">LEVEL: <span id="level-display">1</span></div>
+    <span id="combo-display"></span>
+  </div>
+
+  <div id="daily-banner">📅 DAILY CHALLENGE</div>
+  <div id="effect-bar"></div>
+
+  <div id="canvas-wrapper">
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <div class="overlay" id="start-screen">
+      <h2>SNAKE</h2>
+      <p>ARROWS / WASD — MOVE<br>SWIPE — MOVE (MOBILE)<br>SPACE / ENTER — PLAY<br>TAP — START &nbsp;|&nbsp; D — DAILY</p>
+      <p style="color:#ffd700; font-size:0.68rem; line-height:1.7">
+        ⚡ SPEED &nbsp;|&nbsp; 🧱 NO WALLS &nbsp;|&nbsp; 👻 GHOST<br>
+        🔥 COMBO × BONUS &nbsp;|&nbsp; 🪨 OBSTACLES LVL 3+
+      </p>
+      <p style="color:#39ff14; font-size:0.9rem;">PRESS START</p>
+    </div>
+
+    <div class="overlay hidden" id="gameover-screen">
+      <h2>GAME OVER</h2>
+      <div class="daily-badge hidden" id="daily-badge-go">📅 DAILY CHALLENGE</div>
+      <div class="big-score" id="final-score">0</div>
+      <div class="hs-label hidden" id="new-hs-label"></div>
+      <div id="daily-best-go" style="font-size:0.75rem; color:#ffd700; display:none; letter-spacing:0.1em"></div>
+      <p style="margin-top:4px">PRESS SPACE / ENTER TO RETRY<br>TAP TO RETRY<br><span style="color:#777">D — DAILY CHALLENGE</span></p>
+    </div>
+  </div>
+
+  <div id="level-bar">
+    SPEED&nbsp;
+    <span class="level-pip active" id="pip-1"></span>
+    <span class="level-pip" id="pip-2"></span>
+    <span class="level-pip" id="pip-3"></span>
+    <span class="level-pip" id="pip-4"></span>
+    <span class="level-pip" id="pip-5"></span>
+    <span class="level-pip" id="pip-6"></span>
+  </div>
+
+  <div id="legend">
+    <span><svg width="11" height="11"><circle cx="5.5" cy="5.5" r="4.5" fill="#ff2a6d"/></svg> FOOD</span>
+    <span><svg width="11" height="11"><polygon points="5.5,0.5 10.5,5.5 5.5,10.5 0.5,5.5" fill="#ffd700"/></svg> ⚡ SPEED</span>
+    <span><svg width="11" height="11"><polygon points="5.5,0.5 10.5,5.5 5.5,10.5 0.5,5.5" fill="#00e5ff"/></svg> 🧱 NO WALLS</span>
+    <span><svg width="11" height="11"><polygon points="5.5,0.5 10.5,5.5 5.5,10.5 0.5,5.5" fill="#bf5fff"/></svg> 👻 GHOST</span>
+    <span><svg width="11" height="11"><rect x="1" y="1" width="9" height="9" rx="2" fill="#333" stroke="#555" stroke-width="0.5"/></svg> 🪨 OBSTACLE</span>
+  </div>
+
+<script>
+(function() {
+  const COLS = 20, ROWS = 20;
+  let CELL = 20;
+  const SPEEDS = [150, 130, 110, 90, 70, 55];
+  const FOOD_PER_LEVEL = 5;
+  const BONUS_DURATION = { speed: 5000, nowalls: 7000, ghost: 5000 };
+  const BONUS_FRUIT_TTL = 5000;
+  const BONUS_SPAWN_MIN = 8000;
+  const BONUS_SPAWN_RAND = 4000;
+  const NOWALLS_WARN_AT = 3000;
+  const COMBO_WINDOW = 3000;
+  // Obstacles added per level (index = level-1, levels 1-6)
+  const OBS_COUNT = [0, 0, 3, 5, 7, 10];
+  // Safe zone: snake starts at 8-12,10 — keep center clear of obstacles
+  const SAFE_X = [6, 14], SAFE_Y = [8, 12];
+
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const wrapper = document.getElementById('canvas-wrapper');
+
+  // ── Responsive Canvas ────────────────────────────────────────────────
+  function computeCell() {
+    return Math.floor(Math.min(
+      window.innerWidth - 24,
+      window.innerHeight * 0.55,
+      480
+    ) / 20);
+  }
+
+  function resizeCanvas() {
+    const c = computeCell();
+    if (c === CELL) return;
+    CELL = c;
+    canvas.width = canvas.height = CELL * COLS;
+  }
+
+  resizeCanvas();
+
+  let _rsTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(_rsTimer);
+    _rsTimer = setTimeout(() => {
+      resizeCanvas();
+      if (gameState !== 'dead') draw();
+    }, 150);
+  });
+
+  // ── Seeded RNG ──────────────────────────────────────────────────────
+  function createRNG(seed) {
+    let s = (seed ^ 0xdeadbeef) >>> 0;
+    return () => {
+      s = Math.imul(s ^ (s >>> 15), s | 1);
+      s ^= s + Math.imul(s ^ (s >>> 7), s | 61);
+      return ((s ^ (s >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function getDailySeed() {
+    const d = new Date();
+    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  }
+
+  function getDailyKey() {
+    const d = new Date();
+    return `snakeDailyBest_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  // ── State ───────────────────────────────────────────────────────────
+  let snake, dir, nextDir, food, score, highScore, level, foodEaten;
+  let bonusFruit = null;   // { x, y, type, expiresAt }
+  let bonusEffect = null;  // { type, expiresAt }
+  let nextBonusTime = 0;
+  let obstacles = [];      // [{x, y}]
+  let isDailyMode = false;
+  let dailyHighScore = 0;
+  let dailyObsSets = [];   // pre-gen obstacle positions for daily mode
+  // Combo
+  let comboCount = 0, comboMultiplier = 1, comboTimer = null;
+  let comboPopup = null;   // { text, startMs, startY }
+  // Animation / loop
+  let foodPulse = 0, bonusPulse = 0;
+  let intervalId = null, animFrame, effectBarFrame;
+  let gameState = 'idle';
+  let audioCtx = null;
+
+  highScore = parseInt(localStorage.getItem('snakeHighScore') || '0', 10);
+  document.getElementById('high-score-display').textContent = highScore;
+
+  // ── Audio ───────────────────────────────────────────────────────────
+  function ensureAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playTone(freq, dur, type = 'square', vol = 0.13) {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type = type;
+    o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  }
+
+  function eatSound(mult) {
+    if (!audioCtx) return;
+    const base = 220 + (mult - 1) * 110;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type = 'square';
+    o.frequency.setValueAtTime(base, audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(base * 2, audioCtx.currentTime + 0.08);
+    g.gain.setValueAtTime(0.11, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    o.start(); o.stop(audioCtx.currentTime + 0.1);
+  }
+
+  function gameOverSound() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(440, audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.4);
+    g.gain.setValueAtTime(0.14, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+    o.start(); o.stop(audioCtx.currentTime + 0.45);
+  }
+
+  function levelUpSound() {
+    if (!audioCtx) return;
+    [330, 440, 550].forEach((f, i) => setTimeout(() => playTone(f, 0.1, 'square', 0.1), i * 80));
+  }
+
+  function bonusEatSound(type) {
+    if (!audioCtx) return;
+    const seqs = {
+      speed:   [[440,0],[550,55],[660,110],[880,165]],
+      nowalls: [[660,0],[440,60],[330,120]],
+      ghost:   [[330,0],[440,60],[550,120],[440,180],[330,240]]
+    };
+    (seqs[type] || []).forEach(([f, t]) => setTimeout(() => playTone(f, 0.1, type === 'ghost' ? 'triangle' : 'square', 0.1), t));
+  }
+
+  function effectEndSound() {
+    if (!audioCtx) return;
+    playTone(330, 0.15, 'triangle', 0.1);
+    setTimeout(() => playTone(220, 0.15, 'triangle', 0.08), 120);
+  }
+
+  function comboSound(mult) {
+    if (!audioCtx) return;
+    const f = [220, 330, 440, 550][mult - 1] || 550;
+    playTone(f, 0.06, 'square', 0.08);
+    setTimeout(() => playTone(f * 1.5, 0.08, 'square', 0.1), 50);
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────
+  function isOccupied(pos) {
+    if (snake && snake.some(s => s.x === pos.x && s.y === pos.y)) return true;
+    if (food && food.x === pos.x && food.y === pos.y) return true;
+    if (bonusFruit && bonusFruit.x === pos.x && bonusFruit.y === pos.y) return true;
+    if (obstacles.some(o => o.x === pos.x && o.y === pos.y)) return true;
+    return false;
+  }
+
+  function randFreePos(rngFn) {
+    const fn = rngFn || Math.random;
+    let pos, tries = 0;
+    do {
+      pos = { x: Math.floor(fn() * COLS), y: Math.floor(fn() * ROWS) };
+      tries++;
+      if (tries > 500) break;
+    } while (isOccupied(pos));
+    return pos;
+  }
+
+  function inSafeZone(pos) {
+    return pos.x >= SAFE_X[0] && pos.x <= SAFE_X[1] && pos.y >= SAFE_Y[0] && pos.y <= SAFE_Y[1];
+  }
+
+  // ── Daily obstacle pre-generation ──────────────────────────────────
+  function genDailyObsSets() {
+    const rng = createRNG(getDailySeed());
+    dailyObsSets = [];
+    for (let lvl = 3; lvl <= 6; lvl++) {
+      const count = OBS_COUNT[lvl - 1];
+      const set = [];
+      let tries = 0;
+      while (set.length < count && tries < 1000) {
+        tries++;
+        const pos = { x: Math.floor(rng() * COLS), y: Math.floor(rng() * ROWS) };
+        if (!inSafeZone(pos) && !set.some(s => s.x === pos.x && s.y === pos.y)) {
+          set.push(pos);
+        }
+      }
+      dailyObsSets.push(set);
+    }
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────
+  function initGame() {
+    snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+    dir = { x: 1, y: 0 };
+    nextDir = { x: 1, y: 0 };
+    score = 0; level = 1; foodEaten = 0;
+    bonusFruit = null; bonusEffect = null; obstacles = [];
+    comboCount = 0; comboMultiplier = 1; comboPopup = null;
+    if (comboTimer) { clearTimeout(comboTimer); comboTimer = null; }
+    nextBonusTime = Date.now() + BONUS_SPAWN_MIN + Math.random() * BONUS_SPAWN_RAND;
+    wrapper.classList.remove('wall-warning', 'wall-active');
+
+    if (isDailyMode) {
+      genDailyObsSets();
+      dailyHighScore = parseInt(localStorage.getItem(getDailyKey()) || '0', 10);
+      document.getElementById('hs-label').textContent = 'TODAY:';
+      document.getElementById('high-score-display').textContent = dailyHighScore;
+      document.getElementById('daily-banner').style.display = 'block';
+    } else {
+      document.getElementById('hs-label').textContent = 'BEST:';
+      document.getElementById('high-score-display').textContent = highScore;
+      document.getElementById('daily-banner').style.display = 'none';
+    }
+
+    placeFood();
+    updateUI(); updatePips(); updateComboDisplay(); updateEffectBar();
+  }
+
+  function placeFood() { food = randFreePos(); }
+
+  function spawnObstacles() {
+    if (level < 3) return;
+    const target = OBS_COUNT[level - 1];
+
+    if (isDailyMode) {
+      obstacles = [...(dailyObsSets[level - 3] || [])];
+    } else {
+      while (obstacles.length < target) {
+        let pos, tries = 0;
+        do {
+          pos = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
+          tries++;
+        } while (tries < 300 && (isOccupied(pos) || inSafeZone(pos) || obstacles.some(o => o.x === pos.x && o.y === pos.y)));
+        if (!obstacles.some(o => o.x === pos.x && o.y === pos.y)) obstacles.push(pos);
+      }
+    }
+  }
+
+  function spawnBonus() {
+    const types = ['speed', 'nowalls', 'ghost'];
+    const type = types[Math.floor(Math.random() * 3)];
+    bonusFruit = { ...randFreePos(), type, expiresAt: Date.now() + BONUS_FRUIT_TTL };
+  }
+
+  function scheduleNextBonus() {
+    nextBonusTime = Date.now() + BONUS_SPAWN_MIN + Math.random() * BONUS_SPAWN_RAND;
+  }
+
+  // ── Combo ───────────────────────────────────────────────────────────
+  function updateCombo() {
+    comboCount++;
+    const newMult = comboCount >= 10 ? 4 : comboCount >= 6 ? 3 : comboCount >= 3 ? 2 : 1;
+    if (newMult > comboMultiplier) {
+      comboSound(newMult);
+      comboPopup = { text: 'x' + newMult + '!', startMs: performance.now(), startY: canvas.height / 2 - 20 };
+    }
+    comboMultiplier = newMult;
+    clearTimeout(comboTimer);
+    comboTimer = setTimeout(() => { comboCount = 0; comboMultiplier = 1; updateComboDisplay(); }, COMBO_WINDOW);
+    updateComboDisplay();
+  }
+
+  function updateComboDisplay() {
+    const el = document.getElementById('combo-display');
+    if (comboMultiplier > 1) {
+      el.textContent = 'x' + comboMultiplier + ' COMBO';
+      el.style.display = 'inline';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
+  // ── Speed ────────────────────────────────────────────────────────────
+  function currentSpeed() {
+    const idx = Math.min(level - 1, 5);
+    if (bonusEffect?.type === 'speed') return Math.max(55, SPEEDS[idx] - 40);
+    return SPEEDS[idx];
+  }
+
+  // ── Game Loop ─────────────────────────────────────────────────────────
+  function startLoop() {
+    if (intervalId) clearInterval(intervalId);
+    intervalId = setInterval(tick, currentSpeed());
+  }
+
+  function checkBonusTimers() {
+    const now = Date.now();
+
+    if (bonusFruit && now > bonusFruit.expiresAt) {
+      bonusFruit = null;
+      scheduleNextBonus();
+    }
+
+    if (bonusEffect && now > bonusEffect.expiresAt) {
+      const wasSpeed = bonusEffect.type === 'speed';
+      bonusEffect = null;
+      effectEndSound();
+      wrapper.classList.remove('wall-warning', 'wall-active');
+      updateEffectBar();
+      if (wasSpeed) startLoop();
+    }
+
+    if (bonusEffect?.type === 'nowalls') {
+      const rem = bonusEffect.expiresAt - now;
+      if (rem < NOWALLS_WARN_AT && !wrapper.classList.contains('wall-warning')) {
+        wrapper.classList.remove('wall-active');
+        wrapper.classList.add('wall-warning');
+      }
+    }
+
+    if (!bonusFruit && now >= nextBonusTime) spawnBonus();
+  }
+
+  function tick() {
+    checkBonusTimers();
+    dir = nextDir;
+
+    const noWalls = bonusEffect?.type === 'nowalls';
+    const ghost   = bonusEffect?.type === 'ghost';
+
+    let hx = snake[0].x + dir.x;
+    let hy = snake[0].y + dir.y;
+
+    if (noWalls) {
+      if (hx < 0 || hx >= COLS || hy < 0 || hy >= ROWS) { endGame(); return; }
+    } else {
+      hx = (hx + COLS) % COLS;
+      hy = (hy + ROWS) % ROWS;
+    }
+    const head = { x: hx, y: hy };
+
+    // Obstacle collision
+    if (obstacles.some(o => o.x === head.x && o.y === head.y)) { endGame(); return; }
+
+    // Self collision (skip in ghost mode)
+    if (!ghost && snake.some(s => s.x === head.x && s.y === head.y)) { endGame(); return; }
+
+    snake.unshift(head);
+
+    if (head.x === food.x && head.y === food.y) {
+      updateCombo();
+      score += comboMultiplier;
+      foodEaten++;
+      eatSound(comboMultiplier);
+      updateUI();
+      if (foodEaten % FOOD_PER_LEVEL === 0 && level < 6) {
+        level++; levelUpSound(); updatePips();
+        spawnObstacles();
+        startLoop();
+      }
+      placeFood();
+    } else if (bonusFruit && head.x === bonusFruit.x && head.y === bonusFruit.y) {
+      applyBonus(bonusFruit.type);
+      bonusFruit = null;
+      scheduleNextBonus();
+      snake.pop(); // bonus doesn't grow snake
+    } else {
+      snake.pop();
+    }
+
+    draw();
+  }
+
+  function applyBonus(type) {
+    bonusEffect = { type, expiresAt: Date.now() + BONUS_DURATION[type] };
+    bonusEatSound(type);
+    updateEffectBar();
+    if (type === 'speed') startLoop();
+    if (type === 'nowalls') { wrapper.classList.remove('wall-warning'); wrapper.classList.add('wall-active'); }
+  }
+
+  function endGame() {
+    clearInterval(intervalId); intervalId = null;
+    cancelAnimationFrame(effectBarFrame);
+    gameState = 'dead';
+    gameOverSound();
+    wrapper.classList.remove('wall-warning', 'wall-active');
+
+    const hsKey = isDailyMode ? getDailyKey() : 'snakeHighScore';
+    const prevBest = isDailyMode ? dailyHighScore : highScore;
+    const isNew = score > prevBest;
+
+    if (isNew) {
+      if (isDailyMode) dailyHighScore = score; else highScore = score;
+      localStorage.setItem(hsKey, score);
+      document.getElementById('high-score-display').textContent = score;
+    }
+
+    document.getElementById('final-score').textContent = score;
+
+    const nhsEl = document.getElementById('new-hs-label');
+    nhsEl.textContent = isDailyMode ? '✦ NEW DAILY BEST ✦' : '✦ NEW HIGH SCORE ✦';
+    nhsEl.classList.toggle('hidden', !isNew);
+
+    const badgeGo = document.getElementById('daily-badge-go');
+    const dailyBestGo = document.getElementById('daily-best-go');
+    if (isDailyMode) {
+      badgeGo.classList.remove('hidden');
+      dailyBestGo.style.display = 'block';
+      dailyBestGo.textContent = 'TODAY BEST: ' + Math.max(score, prevBest);
+    } else {
+      badgeGo.classList.add('hidden');
+      dailyBestGo.style.display = 'none';
+    }
+
+    document.getElementById('gameover-screen').classList.remove('hidden');
+    document.getElementById('effect-bar').innerHTML = '';
+    flashCanvas();
+  }
+
+  function flashCanvas() {
+    let n = 0;
+    const f = setInterval(() => {
+      ctx.fillStyle = n % 2 === 0 ? 'rgba(255,42,109,0.25)' : 'transparent';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (++n >= 6) clearInterval(f);
+    }, 80);
+  }
+
+  // ── Effect Bar ────────────────────────────────────────────────────────
+  function updateEffectBar() {
+    const bar = document.getElementById('effect-bar');
+    if (!bonusEffect) { bar.innerHTML = ''; return; }
+    const { type, expiresAt } = bonusEffect;
+    const total = BONUS_DURATION[type];
+    const labels = { speed: '⚡ FAST', nowalls: '🧱 NO WALLS', ghost: '👻 GHOST' };
+    bar.innerHTML = `<div class="effect-pill ${type}">
+      <span>${labels[type]}</span>
+      <div class="effect-track"><div class="effect-fill" id="eff-fill" style="width:100%"></div></div>
+      <span id="eff-secs">-</span></div>`;
+    (function loop() {
+      const fill = document.getElementById('eff-fill');
+      const secs = document.getElementById('eff-secs');
+      if (!fill || !bonusEffect) return;
+      const rem = Math.max(0, expiresAt - Date.now());
+      fill.style.width = (rem / total * 100) + '%';
+      if (secs) secs.textContent = Math.ceil(rem / 1000) + 's';
+      if (rem > 0) effectBarFrame = requestAnimationFrame(loop);
+    })();
+  }
+
+  // ── Drawing ───────────────────────────────────────────────────────────
+  function draw() {
+    foodPulse = (foodPulse + 1) % 60;
+    bonusPulse = (bonusPulse + 1) % 60;
+
+    const t = Date.now() / 1000; // for time-based animations
+
+    // Background
+    ctx.fillStyle = '#0d0d0d';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Grid
+    ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 0.5;
+    for (let i = 0; i <= COLS; i++) {
+      ctx.beginPath(); ctx.moveTo(i*CELL, 0); ctx.lineTo(i*CELL, canvas.height); ctx.stroke();
+    }
+    for (let j = 0; j <= ROWS; j++) {
+      ctx.beginPath(); ctx.moveTo(0, j*CELL); ctx.lineTo(canvas.width, j*CELL); ctx.stroke();
+    }
+
+    // Obstacles
+    obstacles.forEach(o => {
+      ctx.save();
+      ctx.shadowColor = '#ff6600'; ctx.shadowBlur = 3;
+      ctx.fillStyle = '#252525';
+      roundRect(ctx, o.x*CELL+1, o.y*CELL+1, CELL-2, CELL-2, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#484848'; ctx.lineWidth = 1;
+      ctx.stroke();
+      // Highlight (top-left bevel)
+      ctx.strokeStyle = '#555'; ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(o.x*CELL+3, o.y*CELL+CELL-3);
+      ctx.lineTo(o.x*CELL+3, o.y*CELL+3);
+      ctx.lineTo(o.x*CELL+CELL-3, o.y*CELL+3);
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    // Regular food (pulsing circle)
+    const fp = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 2);
+    const fR = 6 + fp * 2;
+    ctx.save();
+    ctx.shadowColor = '#ff2a6d'; ctx.shadowBlur = 10 + fp * 8;
+    ctx.fillStyle = '#ff2a6d';
+    ctx.beginPath();
+    ctx.arc(food.x*CELL + CELL/2, food.y*CELL + CELL/2, fR, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+
+    // Bonus fruit (diamond)
+    if (bonusFruit) {
+      const bp = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 1.5);
+      const rem = bonusFruit.expiresAt - Date.now();
+      const visible = rem > 2000 || Math.floor(Date.now() / 200) % 2 === 0;
+      if (visible) {
+        const colors = { speed: '#ffd700', nowalls: '#00e5ff', ghost: '#bf5fff' };
+        const bc = colors[bonusFruit.type];
+        const cx = bonusFruit.x*CELL + CELL/2, cy = bonusFruit.y*CELL + CELL/2;
+        const r = 7 + bp * 2;
+        ctx.save();
+        ctx.shadowColor = bc; ctx.shadowBlur = 12 + bp * 8;
+        ctx.fillStyle = bc;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - r);
+        ctx.lineTo(cx + r*0.65, cy);
+        ctx.lineTo(cx, cy + r);
+        ctx.lineTo(cx - r*0.65, cy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Snake
+    const ghostMode = bonusEffect?.type === 'ghost';
+    snake.forEach((seg, i) => {
+      const isHead = i === 0;
+      const brightness = isHead ? 1 : Math.max(0.4, 1 - i * 0.025);
+      ctx.save();
+      if (ghostMode) {
+        ctx.globalAlpha = isHead ? 0.85 : Math.max(0.18, brightness * 0.55);
+        ctx.shadowColor = '#bf5fff'; ctx.shadowBlur = isHead ? 18 : 9;
+        ctx.fillStyle = `rgb(${Math.round(120*brightness)}, ${Math.round(15*brightness)}, ${Math.round(180*brightness)})`;
+      } else {
+        ctx.shadowColor = '#39ff14'; ctx.shadowBlur = isHead ? 14 : 7;
+        ctx.fillStyle = `rgb(${Math.round(57*brightness)}, ${Math.round(255*brightness)}, ${Math.round(20*brightness)})`;
+      }
+      const pad = isHead ? 1 : 2;
+      roundRect(ctx, seg.x*CELL+pad, seg.y*CELL+pad, CELL-pad*2, CELL-pad*2, isHead ? 4 : 3);
+      ctx.fill();
+      ctx.restore();
+      if (isHead) drawEyes(seg);
+    });
+
+    // Speed glow on head
+    if (bonusEffect?.type === 'speed') {
+      ctx.save();
+      ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 20;
+      ctx.fillStyle = 'rgba(255,215,0,0.07)';
+      const h = snake[0];
+      roundRect(ctx, h.x*CELL, h.y*CELL, CELL, CELL, 4);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Combo popup
+    if (comboPopup) {
+      const elapsed = performance.now() - comboPopup.startMs;
+      const dur = 1200;
+      if (elapsed < dur) {
+        const prog = elapsed / dur;
+        const alpha = 1 - prog;
+        const y = comboPopup.startY - prog * 50;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.font = 'bold 30px "Courier New"';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffd700';
+        ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 18;
+        ctx.fillText(comboPopup.text, canvas.width/2, y);
+        ctx.restore();
+      } else {
+        comboPopup = null;
+      }
+    }
+  }
+
+  function drawEyes(head) {
+    const cx = head.x*CELL + CELL/2, cy = head.y*CELL + CELL/2;
+    const perp = { x: -dir.y, y: dir.x };
+    const e1 = { x: cx + dir.x*3 + perp.x*3, y: cy + dir.y*3 + perp.y*3 };
+    const e2 = { x: cx + dir.x*3 - perp.x*3, y: cy + dir.y*3 - perp.y*3 };
+    ctx.fillStyle = bonusEffect?.type === 'ghost' ? '#e0a0ff' : '#0d0d0d';
+    [e1, e2].forEach(e => { ctx.beginPath(); ctx.arc(e.x, e.y, 2, 0, Math.PI*2); ctx.fill(); });
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+  }
+
+  function idleDraw() {
+    draw();
+    if (gameState === 'idle') animFrame = requestAnimationFrame(idleDraw);
+  }
+
+  // ── UI ────────────────────────────────────────────────────────────────
+  function updateUI() {
+    document.getElementById('score-display').textContent = score;
+    document.getElementById('level-display').textContent = level;
+  }
+
+  function updatePips() {
+    for (let i = 1; i <= 6; i++) {
+      document.getElementById('pip-' + i).classList.toggle('active', i <= level);
+    }
+  }
+
+  // ── Input ─────────────────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    ensureAudio();
+
+    if (gameState === 'idle' || gameState === 'dead') {
+      if (e.code === 'Space' || e.code === 'Enter') { startGame(false); return; }
+      if (e.code === 'KeyD') { startGame(true); return; }
+    }
+    if (gameState !== 'playing') return;
+
+    switch (e.code) {
+      case 'ArrowUp':    case 'KeyW': if (dir.y !==  1) nextDir = { x:  0, y: -1 }; break;
+      case 'ArrowDown':  case 'KeyS': if (dir.y !== -1) nextDir = { x:  0, y:  1 }; break;
+      case 'ArrowLeft':  case 'KeyA': if (dir.x !==  1) nextDir = { x: -1, y:  0 }; break;
+      case 'ArrowRight': case 'KeyD': if (dir.x !== -1) nextDir = { x:  1, y:  0 }; break;
+    }
+
+    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) e.preventDefault();
+  });
+
+  // ── Touch / Swipe Controls ────────────────────────────────────────────
+  let _tx = 0, _ty = 0;
+
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    ensureAudio();
+    _tx = e.changedTouches[0].clientX;
+    _ty = e.changedTouches[0].clientY;
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', e => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    const dx = t.clientX - _tx, dy = t.clientY - _ty;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < 25) {
+      if (gameState === 'idle' || gameState === 'dead') startGame(false);
+      return;
+    }
+    if (gameState !== 'playing') return;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0  && dir.x !== -1) nextDir = { x:  1, y: 0 };
+      else if (dx < 0 && dir.x !==  1) nextDir = { x: -1, y: 0 };
+    } else {
+      if (dy > 0  && dir.y !== -1) nextDir = { x: 0, y:  1 };
+      else if (dy < 0 && dir.y !==  1) nextDir = { x: 0, y: -1 };
+    }
+  }, { passive: false });
+
+  // ── Overlay tap to start ──────────────────────────────────────────────
+  document.getElementById('start-screen').addEventListener('click', () => {
+    if (gameState === 'idle') { ensureAudio(); startGame(false); }
+  });
+  document.getElementById('gameover-screen').addEventListener('click', () => {
+    if (gameState === 'dead') { ensureAudio(); startGame(false); }
+  });
+
+  function startGame(daily) {
+    isDailyMode = daily;
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('gameover-screen').classList.add('hidden');
+    gameState = 'playing';
+    cancelAnimationFrame(animFrame);
+    initGame(); draw(); startLoop();
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────────────
+  initGame();
+  gameState = 'idle';
+  idleDraw();
+})();
+</script>
+</body>
+</html>
