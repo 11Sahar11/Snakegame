@@ -113,6 +113,7 @@
     .effect-pill.speed   { color: #ffd700; box-shadow: 0 0 6px #ffd700; }
     .effect-pill.nowalls { color: #00e5ff; box-shadow: 0 0 6px #00e5ff; }
     .effect-pill.ghost   { color: #bf5fff; box-shadow: 0 0 6px #bf5fff; }
+    .effect-pill.shrink  { color: #00cfff; box-shadow: 0 0 6px #00cfff; }
 
     .effect-track {
       width: 60px; height: 5px;
@@ -124,6 +125,7 @@
     .effect-pill.speed   .effect-fill { background: #ffd700; }
     .effect-pill.nowalls .effect-fill { background: #00e5ff; }
     .effect-pill.ghost   .effect-fill { background: #bf5fff; }
+    .effect-pill.shrink  .effect-fill { background: #00cfff; }
 
     @keyframes wallFlash {
       0%, 100% {
@@ -244,9 +246,9 @@
     .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 5px 10px;
+      gap: 5px 8px;
       width: 100%;
-      max-width: 260px;
+      max-width: 280px;
     }
 
     .info-item {
@@ -455,8 +457,16 @@
             <div><div class="il">COMBO x4</div><div class="id">eat fast = bonus</div></div>
           </div>
           <div class="info-item">
-            <span class="ii">🪨</span>
-            <div><div class="il">OBSTACLES</div><div class="id">appear at level 3+</div></div>
+            <span class="ii">✂️</span>
+            <div><div class="il">SHRINK</div><div class="id">cut -4 segments</div></div>
+          </div>
+          <div class="info-item">
+            <span class="ii">⭐</span>
+            <div><div class="il">GOLDEN FOOD</div><div class="id">3s · worth 5×</div></div>
+          </div>
+          <div class="info-item">
+            <span class="ii">🌀</span>
+            <div><div class="il">PORTALS</div><div class="id">teleport, lvl 4+</div></div>
           </div>
           <div class="info-item">
             <span class="ii">📅</span>
@@ -512,6 +522,10 @@
   const OBS_COUNT = [0, 0, 3, 5, 7, 10];
   const OBS_MOVE_INTERVAL = 4000; // obstacles shift every 4s from level 3+
   const SAFE_X = [6, 14], SAFE_Y = [8, 12];
+  const SHRINK_AMOUNT = 4;
+  const GOLDEN_TTL = 3000;
+  const GOLDEN_VALUE = 5;
+  const GOLDEN_SPAWN_INTERVAL = 22000;
 
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
@@ -580,6 +594,10 @@
   let floaters = [];
   let speedTrail = [];
   let lastObsMoveTime = 0;
+  // New features
+  let goldenFood = null;
+  let nextGoldenTime = 0;
+  let portals = [];
   // Loop
   let foodPulse = 0, bonusPulse = 0;
   let intervalId = null, animFrame, effectBarFrame;
@@ -663,6 +681,8 @@
     if (snake && snake.some(s => s.x === pos.x && s.y === pos.y)) return true;
     if (food && food.x === pos.x && food.y === pos.y) return true;
     if (bonusFruit && bonusFruit.x === pos.x && bonusFruit.y === pos.y) return true;
+    if (goldenFood && goldenFood.x === pos.x && goldenFood.y === pos.y) return true;
+    if (portals.some(p => p.x === pos.x && p.y === pos.y)) return true;
     if (obstacles.some(o => o.x === pos.x && o.y === pos.y)) return true;
     return false;
   }
@@ -798,6 +818,8 @@
     comboCount = 0; comboMultiplier = 1; comboPopup = null;
     particles = []; floaters = []; speedTrail = [];
     lastObsMoveTime = 0;
+    goldenFood = null; nextGoldenTime = Date.now() + GOLDEN_SPAWN_INTERVAL;
+    portals = [];
     if (comboTimer) { clearTimeout(comboTimer); comboTimer = null; }
     nextBonusTime = Date.now() + BONUS_SPAWN_MIN + Math.random() * BONUS_SPAWN_RAND;
     wrapper.classList.remove('wall-warning', 'wall-active');
@@ -835,29 +857,42 @@
         if (!obstacles.some(o => o.x === pos.x && o.y === pos.y)) obstacles.push(pos);
       }
     }
+    // Spawn portals from level 4+
+    if (level >= 4 && portals.length === 0) {
+      portals = [randFreePos(), randFreePos()];
+    }
   }
 
   function moveObstacles() {
     if (level < 3 || obstacles.length === 0) return;
     const DIRS = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
     obstacles = obstacles.map(o => {
-      const shuffled = [...DIRS].sort(() => Math.random() - 0.5);
-      for (const d of shuffled) {
-        const nx = o.x + d.x, ny = o.y + d.y;
-        if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) continue;
-        if (snake.some(s => s.x === nx && s.y === ny)) continue;
-        if (food.x === nx && food.y === ny) continue;
-        if (bonusFruit && bonusFruit.x === nx && bonusFruit.y === ny) continue;
-        if (obstacles.some(ob => ob !== o && ob.x === nx && ob.y === ny)) continue;
-        return { x: nx, y: ny };
+      let cur = o;
+      for (let step = 0; step < 2; step++) {
+        const shuffled = [...DIRS].sort(() => Math.random() - 0.5);
+        let moved = false;
+        for (const d of shuffled) {
+          const nx = cur.x + d.x, ny = cur.y + d.y;
+          if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) continue;
+          if (snake.some(s => s.x === nx && s.y === ny)) continue;
+          if (food.x === nx && food.y === ny) continue;
+          if (goldenFood && goldenFood.x === nx && goldenFood.y === ny) continue;
+          if (bonusFruit && bonusFruit.x === nx && bonusFruit.y === ny) continue;
+          if (portals.some(p => p.x === nx && p.y === ny)) continue;
+          if (obstacles.some(ob => ob !== o && ob.x === nx && ob.y === ny)) continue;
+          cur = { x: nx, y: ny };
+          moved = true;
+          break;
+        }
+        if (!moved) break;
       }
-      return o;
+      return cur;
     });
   }
 
   function spawnBonus() {
-    const types = ['speed', 'nowalls', 'ghost'];
-    const type = types[Math.floor(Math.random() * 3)];
+    const types = ['speed', 'nowalls', 'ghost', 'shrink'];
+    const type = types[Math.floor(Math.random() * types.length)];
     bonusFruit = { ...randFreePos(), type, expiresAt: Date.now() + BONUS_FRUIT_TTL };
   }
 
@@ -929,6 +964,12 @@
 
     if (!bonusFruit && now >= nextBonusTime) spawnBonus();
 
+    // Golden food timer
+    if (!goldenFood && now >= nextGoldenTime) {
+      goldenFood = { ...randFreePos(), expiresAt: now + GOLDEN_TTL };
+    }
+    if (goldenFood && now > goldenFood.expiresAt) goldenFood = null;
+
     if (level >= 3 && lastObsMoveTime > 0 && now - lastObsMoveTime >= OBS_MOVE_INTERVAL) {
       lastObsMoveTime = now;
       moveObstacles();
@@ -964,9 +1005,29 @@
     if (!ghost && obstacles.some(o => o.x === head.x && o.y === head.y)) { endGame(); return; }
     if (!ghost && snake.some(s => s.x === head.x && s.y === head.y)) { endGame(); return; }
 
+    // Portal teleport
+    const portalIdx = portals.findIndex(p => p.x === head.x && p.y === head.y);
+    if (portalIdx !== -1) {
+      const exit = portals[1 - portalIdx];
+      head.x = exit.x; head.y = exit.y;
+      spawnParticles(exit.x, exit.y, '#cc44ff', 10);
+      playTone(660, 0.12, 'triangle', 0.1);
+    }
+
     snake.unshift(head);
 
-    if (head.x === food.x && head.y === food.y) {
+    // Golden food
+    if (goldenFood && head.x === goldenFood.x && head.y === goldenFood.y) {
+      const pts = GOLDEN_VALUE * comboMultiplier;
+      score += pts;
+      goldenFood = null;
+      nextGoldenTime = Date.now() + GOLDEN_SPAWN_INTERVAL + Math.random() * 10000;
+      spawnParticles(head.x, head.y, '#ffd700', 16);
+      spawnFloater(head.x, head.y, '+' + pts + '\u2605', '#ffd700');
+      eatSound(4);
+      updateUI();
+      snake.pop();
+    } else if (head.x === food.x && head.y === food.y) {
       updateCombo();
       score += comboMultiplier;
       foodEaten++;
@@ -999,6 +1060,14 @@
   }
 
   function applyBonus(type) {
+    if (type === 'shrink') {
+      snake = snake.slice(0, Math.max(3, snake.length - SHRINK_AMOUNT));
+      spawnParticles(snake[0].x, snake[0].y, '#00cfff', 12);
+      spawnFloater(snake[0].x, snake[0].y, '-4\u2702', '#00cfff');
+      bonusEatSound('ghost'); // nice sound
+      scheduleNextBonus();
+      return;
+    }
     bonusEffect = { type, expiresAt: Date.now() + BONUS_DURATION[type] };
     bonusEatSound(type);
     updateEffectBar();
@@ -1060,7 +1129,7 @@
     if (!bonusEffect) { bar.innerHTML = ''; return; }
     const { type, expiresAt } = bonusEffect;
     const total = BONUS_DURATION[type];
-    const labels = { speed: '\u26a1 FAST', nowalls: '\u{1f9f1} NO WALLS', ghost: '\u{1f47b} GHOST' };
+    const labels = { speed: '\u26a1 FAST', nowalls: '\u{1f9f1} NO WALLS', ghost: '\u{1f47b} GHOST', shrink: '\u2702 SHRINK' };
     bar.innerHTML = `<div class="effect-pill ${type}">
       <span>${labels[type]}</span>
       <div class="effect-track"><div class="effect-fill" id="eff-fill" style="width:100%"></div></div>
@@ -1128,13 +1197,78 @@
     ctx.fill();
     ctx.restore();
 
+    // Golden food (rotating star)
+    if (goldenFood) {
+      const gp = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 0.8);
+      const rem = goldenFood.expiresAt - Date.now();
+      const visible = rem > 800 || Math.floor(Date.now() / 120) % 2 === 0;
+      if (visible) {
+        const gx = goldenFood.x * CELL + CELL / 2;
+        const gy = goldenFood.y * CELL + CELL / 2;
+        const gr = CELL * 0.33 + gp * CELL * 0.07;
+        ctx.save();
+        ctx.translate(gx, gy);
+        ctx.rotate(t * 2.5);
+        ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 16 + gp * 10;
+        ctx.fillStyle = '#ffd700';
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          const a = (i * Math.PI * 2) / 5 - Math.PI / 2;
+          const b = a + Math.PI / 5;
+          if (i === 0) ctx.moveTo(Math.cos(a) * gr, Math.sin(a) * gr);
+          else ctx.lineTo(Math.cos(a) * gr, Math.sin(a) * gr);
+          ctx.lineTo(Math.cos(b) * gr * 0.45, Math.sin(b) * gr * 0.45);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Portals (linked circles with dashed connector)
+    if (portals.length === 2) {
+      const portalColors = ['#cc44ff', '#ff44cc'];
+      portals.forEach((p, i) => {
+        const px = p.x * CELL + CELL / 2, py = p.y * CELL + CELL / 2;
+        const spin = t * 2.2 * (i === 0 ? 1 : -1);
+        ctx.save();
+        ctx.translate(px, py);
+        ctx.rotate(spin);
+        ctx.shadowColor = portalColors[i]; ctx.shadowBlur = 14;
+        ctx.strokeStyle = portalColors[i]; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, CELL * 0.38, 0, Math.PI * 2);
+        ctx.stroke();
+        // Inner dot
+        ctx.fillStyle = portalColors[i];
+        ctx.globalAlpha = 0.35;
+        ctx.beginPath();
+        ctx.arc(0, 0, CELL * 0.18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+      // Dashed line between portals
+      const p1x = portals[0].x * CELL + CELL / 2, p1y = portals[0].y * CELL + CELL / 2;
+      const p2x = portals[1].x * CELL + CELL / 2, p2y = portals[1].y * CELL + CELL / 2;
+      ctx.save();
+      ctx.setLineDash([3, 5]);
+      ctx.strokeStyle = 'rgba(180,60,255,0.2)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(p1x, p1y);
+      ctx.lineTo(p2x, p2y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
     // Bonus fruit (diamond)
     if (bonusFruit) {
       const bp = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 1.5);
       const rem = bonusFruit.expiresAt - Date.now();
       const visible = rem > 2000 || Math.floor(Date.now() / 200) % 2 === 0;
       if (visible) {
-        const colors = { speed: '#ffd700', nowalls: '#00e5ff', ghost: '#bf5fff' };
+        const colors = { speed: '#ffd700', nowalls: '#00e5ff', ghost: '#bf5fff', shrink: '#00cfff' };
         const bc = colors[bonusFruit.type];
         const cx = bonusFruit.x*CELL + CELL/2, cy = bonusFruit.y*CELL + CELL/2;
         const r = CELL * 0.35 + bp * CELL * 0.1;
