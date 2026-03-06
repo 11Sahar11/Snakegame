@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Neon snake S-curve icon foreground for adaptive icon -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Snake body: S-curve, 9 segments -->
+    <!-- Row 0 going right (tail) -->
+    <path android:fillColor="#1d7213"
+        android:pathData="M10,18 h14 v14 h-14 z"/>
+    <path android:fillColor="#228516"
+        android:pathData="M26,18 h14 v14 h-14 z"/>
+    <path android:fillColor="#2caa1c"
+        android:pathData="M42,18 h14 v14 h-14 z"/>
+    <!-- Turn down right -->
+    <path android:fillColor="#30be20"
+        android:pathData="M56,18 h14 v14 h-14 z"/>
+    <path android:fillColor="#33d823"
+        android:pathData="M56,34 h14 v14 h-14 z"/>
+    <!-- Row 1 going left -->
+    <path android:fillColor="#35de24"
+        android:pathData="M42,48 h14 v14 h-14 z"/>
+    <path android:fillColor="#37f026"
+        android:pathData="M26,48 h14 v14 h-14 z"/>
+    <!-- Turn down left -->
+    <path android:fillColor="#38f827"
+        android:pathData="M10,48 h14 v14 h-14 z"/>
+    <path android:fillColor="#39ff14"
+        android:pathData="M10,64 h14 v14 h-14 z"/>
+    <!-- Row 2 going right -->
+    <path android:fillColor="#39ff14"
+        android:pathData="M26,78 h14 v14 h-14 z"/>
+    <path android:fillColor="#39ff14"
+        android:pathData="M42,78 h14 v14 h-14 z"/>
+    <!-- HEAD -->
+    <path android:fillColor="#39ff14"
+        android:pathData="M56,78 h16 v16 h-16 z"/>
+
+    <!-- Eyes -->
+    <path android:fillColor="#0d0d0d"
+        android:pathData="M68,82 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"/>
+    <path android:fillColor="#0d0d0d"
+        android:pathData="M68,90 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"/>
+
+    <!-- Food (pink circle) -->
+    <path android:fillColor="#ff2a6d"
+        android:pathData="M88,86 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0"/>
+</vector>
