@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="food-glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="90" fill="#0d0d0d"/>
+
+  <!-- Subtle grid lines -->
+  <g stroke="#191919" stroke-width="1">
+    <line x1="0" y1="64" x2="512" y2="64"/>
+    <line x1="0" y1="128" x2="512" y2="128"/>
+    <line x1="0" y1="192" x2="512" y2="192"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <line x1="0" y1="320" x2="512" y2="320"/>
+    <line x1="0" y1="384" x2="512" y2="384"/>
+    <line x1="0" y1="448" x2="512" y2="448"/>
+    <line x1="64" y1="0" x2="64" y2="512"/>
+    <line x1="128" y1="0" x2="128" y2="512"/>
+    <line x1="192" y1="0" x2="192" y2="512"/>
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="320" y1="0" x2="320" y2="512"/>
+    <line x1="384" y1="0" x2="384" y2="512"/>
+    <line x1="448" y1="0" x2="448" y2="512"/>
+  </g>
+
+  <!-- Snake body (S-curve, 15 segments, stride=72px, seg=60x60) -->
+  <!-- Row 0 y=60: tail → right  (x=44,116,188,260,332) -->
+  <!-- Row 1 y=204: ← left       (x=332,260,188,116,44)  via turn at (332,132) -->
+  <!-- Row 2 y=348: → right      (x=44,116,188,260,332)  via turn at (44,276)  -->
+  <!-- Head at (332,348), food at (404+8=412 center, 378 center) -->
+
+  <g filter="url(#glow)">
+    <!-- Row 0: going right (tail at left) -->
+    <rect x="44" y="60" width="60" height="60" rx="9" fill="#196010"/>
+    <rect x="116" y="60" width="60" height="60" rx="9" fill="#1d7213"/>
+    <rect x="188" y="60" width="60" height="60" rx="9" fill="#228516"/>
+    <rect x="260" y="60" width="60" height="60" rx="9" fill="#279819"/>
+    <rect x="332" y="60" width="60" height="60" rx="9" fill="#2caa1c"/>
+
+    <!-- Turn: right side going down (132 = 60+72) -->
+    <rect x="332" y="132" width="60" height="60" rx="9" fill="#2eb51e"/>
+
+    <!-- Row 1: going left (y=204=132+72) -->
+    <rect x="260" y="204" width="60" height="60" rx="9" fill="#30be20"/>
+    <rect x="188" y="204" width="60" height="60" rx="9" fill="#31c821"/>
+    <rect x="116" y="204" width="60" height="60" rx="9" fill="#32d022"/>
+    <rect x="44" y="204" width="60" height="60" rx="9" fill="#33d823"/>
+
+    <!-- Turn: left side going down (276 = 204+72) -->
+    <rect x="44" y="276" width="60" height="60" rx="9" fill="#35de24"/>
+
+    <!-- Row 2: going right (y=348=276+72) — head at right -->
+    <rect x="116" y="348" width="60" height="60" rx="9" fill="#36e825"/>
+    <rect x="188" y="348" width="60" height="60" rx="9" fill="#37f026"/>
+    <rect x="260" y="348" width="60" height="60" rx="9" fill="#38f827"/>
+
+    <!-- HEAD -->
+    <rect x="332" y="348" width="60" height="60" rx="9" fill="#39ff14"/>
+  </g>
+
+  <!-- Eyes on head (facing right) -->
+  <circle cx="378" cy="368" r="6" fill="#0d0d0d"/>
+  <circle cx="378" cy="388" r="6" fill="#0d0d0d"/>
+
+  <!-- Food — to the right of head, same row -->
+  <circle cx="434" cy="378" r="24" fill="#ff2a6d" filter="url(#food-glow)"/>
+</svg>
