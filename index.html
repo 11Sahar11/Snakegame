@@ -509,6 +509,59 @@
     .sw-btn.retry-stage { background: rgba(100,180,255,0.06); border-color: rgba(100,180,255,0.5); color: #64b4ff; }
     .sw-btn.menu-btn { background: rgba(100,100,100,0.06); border-color: rgba(100,100,100,0.35); color: #7a9aaa; }
 
+    /* Boss stage cells */
+    .stage-cell.boss {
+      border-color: rgba(255,30,30,0.9);
+      box-shadow: 0 0 10px rgba(255,30,30,0.4), inset 0 0 4px rgba(255,30,30,0.1);
+      background: rgba(30,8,8,0.85);
+    }
+    .stage-cell.boss:hover:not(.locked) { box-shadow: 0 0 18px rgba(255,30,30,0.7); }
+    .stage-cell .cell-boss { font-size: 0.42rem; color: #ff1111; letter-spacing: 0.06em; text-shadow: 0 0 6px #ff1111; }
+
+    /* Snake Select Screen */
+    #snake-select-screen { gap: 10px; padding: 12px 16px; overflow-y: auto; }
+    .snake-select-title {
+      font-family: 'Orbitron', monospace; font-size: 1.1rem; letter-spacing: 0.3em;
+      text-shadow: 0 0 8px #39ff14, 0 0 24px rgba(57,255,20,0.5);
+    }
+    #snake-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; width: 100%; max-width: 320px;
+    }
+    .snake-card {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      padding: 10px 8px; border-radius: 5px;
+      border: 1px solid; cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
+    }
+    .snake-card:active { transform: scale(0.95); }
+    .snake-card.selected { outline: 2px solid currentColor; outline-offset: 2px; }
+    .snake-card .sn-icon { font-size: 1.6rem; }
+    .snake-card .sn-name { font-family: 'Share Tech Mono',monospace; font-size: 0.72rem; letter-spacing: 0.1em; }
+    .snake-card .sn-desc { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.7; text-align: center; line-height: 1.4; }
+    .snake-card.classic { border-color: rgba(57,255,20,0.6); color: #39ff14; background: rgba(10,30,10,0.7); }
+    .snake-card.classic:hover,.snake-card.classic.selected { background: rgba(57,255,20,0.12); box-shadow: 0 0 14px rgba(57,255,20,0.4); }
+    .snake-card.frost { border-color: rgba(0,200,255,0.6); color: #00ccff; background: rgba(0,15,30,0.7); }
+    .snake-card.frost:hover,.snake-card.frost.selected { background: rgba(0,200,255,0.1); box-shadow: 0 0 14px rgba(0,200,255,0.4); }
+    .snake-card.flip { border-color: rgba(255,140,0,0.6); color: #ff8800; background: rgba(25,12,0,0.7); }
+    .snake-card.flip:hover,.snake-card.flip.selected { background: rgba(255,140,0,0.1); box-shadow: 0 0 14px rgba(255,140,0,0.4); }
+    .snake-card.fire { border-color: rgba(255,60,30,0.6); color: #ff4422; background: rgba(28,5,0,0.7); }
+    .snake-card.fire:hover,.snake-card.fire.selected { background: rgba(255,60,30,0.1); box-shadow: 0 0 14px rgba(255,60,30,0.4); }
+
+    /* Power Button */
+    #power-btn {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.1em; padding: 3px 10px; border-radius: 3px;
+      cursor: pointer; border: 1px solid; transition: 0.2s;
+    }
+    #power-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    #power-btn.classic-pwr { display: none; }
+    #power-btn.frost-pwr { border-color: rgba(0,200,255,0.7); color: #00ccff; background: rgba(0,200,255,0.08); }
+    #power-btn.frost-pwr:hover:not(:disabled) { background: rgba(0,200,255,0.18); box-shadow: 0 0 10px rgba(0,200,255,0.4); }
+    #power-btn.flip-pwr { border-color: rgba(255,140,0,0.7); color: #ff8800; background: rgba(255,140,0,0.08); }
+    #power-btn.fire-pwr { border-color: rgba(255,60,30,0.7); color: #ff4422; background: rgba(255,60,30,0.08); }
+    #power-btn.fire-pwr:hover:not(:disabled) { background: rgba(255,60,30,0.18); box-shadow: 0 0 10px rgba(255,60,30,0.4); }
+
     @media (max-width: 500px) {
       h1 { font-size: 1.6rem; margin-bottom: 6px; }
       #score-panel { gap: 14px; font-size: 0.75rem; }
@@ -535,6 +588,7 @@
     <div class="hud-item">STAGE: <span id="hud-stage">1</span></div>
     <div class="hud-item hud-timer" id="hud-timer-wrap">TIME: <span id="hud-time">60</span>s</div>
     <div class="hud-item">FOOD: <span id="hud-food">0</span>/<span id="hud-food-total">0</span></div>
+    <button id="power-btn" class="classic-pwr">⚡ POWER</button>
   </div>
   <div id="effect-bar"></div>
 
@@ -592,8 +646,16 @@
       <div class="main-buttons">
         <button class="main-btn stage-btn" id="stage-menu-btn">▶ STAGE</button>
         <button class="main-btn daily-btn" id="daily-menu-btn">📅 DAILY</button>
+        <button class="main-btn" id="snake-menu-btn" style="background:rgba(57,255,20,0.05);border-color:rgba(57,255,20,0.4);color:#7dff60;">🐍 CHOOSE SNAKE</button>
         <button class="main-btn store-btn" id="store-menu-btn" title="Coming Soon">🏪 STORE 🔒</button>
       </div>
+    </div>
+
+    <!-- Snake Select screen -->
+    <div class="overlay hidden" id="snake-select-screen">
+      <div class="snake-select-title">CHOOSE SNAKE</div>
+      <div id="snake-grid"></div>
+      <button class="stage-back-btn" id="snake-back-btn">← BACK</button>
     </div>
 
     <!-- Stage Select screen -->
@@ -731,6 +793,11 @@
   let goldenFood = null;
   let nextGoldenTime = 0;
   let portals = [];
+  // Snake type + power state
+  let selectedSnake = 'classic'; // 'classic'|'frost'|'flip'|'fire'
+  let flipShield = 0;
+  let frostActive = false, frostExpires = 0, frostCooldown = 0;
+  let fireball = null, fireCooldown = 0;
   // Loop
   let foodPulse = 0, bonusPulse = 0;
   let intervalId = null, animFrame, effectBarFrame;
@@ -1103,7 +1170,7 @@
     }
     if (goldenFood && now > goldenFood.expiresAt) goldenFood = null;
 
-    if (level >= 3 && lastObsMoveTime > 0 && now - lastObsMoveTime >= OBS_MOVE_INTERVAL) {
+    if (!isStageMode && level >= 3 && lastObsMoveTime > 0 && now - lastObsMoveTime >= OBS_MOVE_INTERVAL) {
       lastObsMoveTime = now;
       moveObstacles();
     }
@@ -1421,6 +1488,20 @@
 
     // Snake
     const ghostMode = bonusEffect?.type === 'ghost';
+    const SNAKE_COLORS = {
+      classic: { r:57,  g:255, b:20,  glow:'#39ff14' },
+      frost:   { r:0,   g:200, b:255, glow:'#00ccff' },
+      flip:    { r:255, g:140, b:0,   glow:'#ff8800' },
+      fire:    { r:255, g:55,  b:20,  glow:'#ff3311' }
+    };
+    const sc = SNAKE_COLORS[selectedSnake] || SNAKE_COLORS.classic;
+    // Frost frozen glow overlay on monsters
+    if (frostActive && isStageMode) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,180,255,0.08)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
     snake.forEach((seg, i) => {
       const isHead = i === 0;
       const brightness = isHead ? 1 : Math.max(0.4, 1 - i * 0.025);
@@ -1430,15 +1511,35 @@
         ctx.shadowColor = '#bf5fff'; ctx.shadowBlur = isHead ? 18 : 9;
         ctx.fillStyle = `rgb(${Math.round(120*brightness)}, ${Math.round(15*brightness)}, ${Math.round(180*brightness)})`;
       } else {
-        ctx.shadowColor = '#39ff14'; ctx.shadowBlur = isHead ? 14 : 7;
-        ctx.fillStyle = `rgb(${Math.round(57*brightness)}, ${Math.round(255*brightness)}, ${Math.round(20*brightness)})`;
+        ctx.shadowColor = sc.glow; ctx.shadowBlur = isHead ? 14 : 7;
+        ctx.fillStyle = `rgb(${Math.round(sc.r*brightness)}, ${Math.round(sc.g*brightness)}, ${Math.round(sc.b*brightness)})`;
       }
       const pad = isHead ? 1 : 2;
       roundRect(ctx, seg.x*CELL+pad, seg.y*CELL+pad, CELL-pad*2, CELL-pad*2, isHead ? 4 : 3);
       ctx.fill();
+      // Flip shield indicator: glowing ring
+      if (isHead && selectedSnake === 'flip' && flipShield > 0) {
+        ctx.shadowColor = '#ff8800'; ctx.shadowBlur = 20;
+        ctx.strokeStyle = 'rgba(255,140,0,0.6)'; ctx.lineWidth = 2;
+        roundRect(ctx, seg.x*CELL-2, seg.y*CELL-2, CELL+4, CELL+4, 6);
+        ctx.stroke();
+      }
       ctx.restore();
       if (isHead) drawEyes(seg);
     });
+
+    // Fireball
+    if (fireball) {
+      const fx = fireball.x * CELL + CELL/2, fy = fireball.y * CELL + CELL/2;
+      const ft = Date.now() / 1000;
+      ctx.save();
+      ctx.shadowColor = '#ff4400'; ctx.shadowBlur = 16;
+      ctx.fillStyle = '#ff6600';
+      ctx.beginPath(); ctx.arc(fx, fy, CELL*0.3, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#ffcc00'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(fx, fy, CELL*0.15, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
 
     // Speed head glow
     if (bonusEffect?.type === 'speed') {
@@ -1487,7 +1588,7 @@
     const perp = { x: -dir.y, y: dir.x };
     const e1 = { x: cx + dir.x*3 + perp.x*3, y: cy + dir.y*3 + perp.y*3 };
     const e2 = { x: cx + dir.x*3 - perp.x*3, y: cy + dir.y*3 - perp.y*3 };
-    ctx.fillStyle = bonusEffect?.type === 'ghost' ? '#e0a0ff' : '#0a1120';
+    ctx.fillStyle = bonusEffect?.type === 'ghost' ? '#e0a0ff' : selectedSnake === 'frost' ? '#001830' : '#0a1120';
     [e1, e2].forEach(e => { ctx.beginPath(); ctx.arc(e.x, e.y, 2, 0, Math.PI*2); ctx.fill(); });
   }
 
@@ -1615,6 +1716,8 @@
   // speedIdx: 0=150ms 1=130ms 2=110ms 3=90ms 4=70ms 5=55ms
   // mapType: 'open'|'cross'|'ring'|'islands'|'maze'|'corridor'
   // monsters[]: {type:'roam'|'chase'|'patrol', count}
+  // Stage tuple: [foodsToWin, timeSec, speedIdx, mapType, obsCount, monsters[], stageType]
+  // stageType: false='normal', 'hard'=hard stage, 'boss'=boss stage (every 10th)
   const STAGES = [
     // 1-5: Very easy, open maps, no monsters
     [5,  90, 0, 'open',     0, [],                    false],
@@ -1626,56 +1729,111 @@
     [8,  80, 1, 'cross',    3, [],                    false],
     [8,  78, 1, 'cross',    4, [],                    false],
     [9,  75, 1, 'cross',    4, [],                    false],
-    [9,  75, 1, 'islands',  4, [],                    false],
-    [10, 70, 1, 'islands',  5, [{type:'roam',count:1}], true],
+    [9,  75, 1, 'islands',  4, [],                    'hard'],
+    [12, 65, 2, 'islands',  5, [{type:'roam',count:2},{type:'chase',count:1}], 'boss'],
     // 11-15
     [9,  75, 2, 'islands',  4, [{type:'roam',count:1}], false],
     [10, 72, 2, 'islands',  5, [{type:'roam',count:1}], false],
     [10, 70, 2, 'ring',     5, [{type:'roam',count:1}], false],
-    [11, 68, 2, 'ring',     6, [{type:'roam',count:1}], false],
-    [12, 65, 2, 'ring',     6, [{type:'roam',count:2}], true],
+    [11, 68, 2, 'ring',     6, [{type:'roam',count:1}], 'hard'],
+    [12, 65, 2, 'ring',     6, [{type:'roam',count:2}], false],
     // 16-20
     [11, 68, 2, 'cross',    6, [{type:'roam',count:1},{type:'chase',count:1}], false],
     [12, 65, 2, 'cross',    7, [{type:'roam',count:1},{type:'chase',count:1}], false],
-    [12, 65, 3, 'islands',  6, [{type:'chase',count:2}],                      false],
+    [12, 65, 3, 'islands',  6, [{type:'chase',count:2}],                      'hard'],
     [13, 62, 3, 'islands',  7, [{type:'chase',count:2}],                      false],
-    [14, 60, 3, 'maze',     5, [{type:'chase',count:2},{type:'roam',count:1}], true],
+    [16, 55, 3, 'maze',     6, [{type:'chase',count:3},{type:'roam',count:2},{type:'patrol',count:1}], 'boss'],
     // 21-25
     [13, 63, 3, 'maze',     5, [{type:'chase',count:2},{type:'roam',count:1}], false],
     [14, 60, 3, 'maze',     6, [{type:'chase',count:2},{type:'roam',count:1}], false],
     [14, 60, 3, 'ring',     7, [{type:'chase',count:3}],                       false],
-    [15, 58, 3, 'ring',     7, [{type:'chase',count:2},{type:'patrol',count:1}], false],
-    [15, 55, 3, 'maze',     8, [{type:'chase',count:3},{type:'patrol',count:1}], true],
+    [15, 58, 3, 'ring',     7, [{type:'chase',count:2},{type:'patrol',count:1}], 'hard'],
+    [15, 55, 3, 'maze',     8, [{type:'chase',count:3},{type:'patrol',count:1}], false],
     // 26-30
     [15, 58, 3, 'cross',    8, [{type:'chase',count:2},{type:'patrol',count:2}], false],
     [15, 55, 4, 'cross',    8, [{type:'chase',count:3},{type:'patrol',count:1}], false],
-    [16, 55, 4, 'corridor', 4, [{type:'patrol',count:2},{type:'chase',count:2}], false],
+    [16, 55, 4, 'corridor', 4, [{type:'patrol',count:2},{type:'chase',count:2}], 'hard'],
     [16, 52, 4, 'corridor', 4, [{type:'patrol',count:2},{type:'chase',count:2}], false],
-    [17, 50, 4, 'maze',     6, [{type:'chase',count:3},{type:'patrol',count:2}], true],
+    [18, 45, 4, 'maze',     8, [{type:'chase',count:4},{type:'patrol',count:3},{type:'roam',count:1}], 'boss'],
     // 31-35
     [16, 55, 4, 'corridor', 5, [{type:'chase',count:3},{type:'patrol',count:2}], false],
     [17, 52, 4, 'corridor', 5, [{type:'chase',count:4},{type:'patrol',count:1}], false],
-    [17, 50, 4, 'islands',  8, [{type:'chase',count:3},{type:'patrol',count:2}], false],
+    [17, 50, 4, 'islands',  8, [{type:'chase',count:3},{type:'patrol',count:2}], 'hard'],
     [18, 50, 4, 'maze',     7, [{type:'chase',count:4},{type:'roam',count:1}],   false],
-    [18, 48, 4, 'ring',     8, [{type:'chase',count:4},{type:'patrol',count:2}], true],
+    [18, 48, 4, 'ring',     8, [{type:'chase',count:4},{type:'patrol',count:2}], false],
     // 36-40
     [17, 52, 4, 'islands',  9, [{type:'chase',count:4},{type:'patrol',count:2}], false],
     [18, 50, 5, 'islands',  9, [{type:'chase',count:4},{type:'patrol',count:2}], false],
-    [18, 48, 5, 'maze',     8, [{type:'chase',count:5},{type:'patrol',count:2}], false],
+    [18, 48, 5, 'maze',     8, [{type:'chase',count:5},{type:'patrol',count:2}], 'hard'],
     [19, 46, 5, 'ring',     9, [{type:'chase',count:5},{type:'patrol',count:2}], false],
-    [20, 45, 5, 'corridor', 5, [{type:'chase',count:5},{type:'patrol',count:3}], true],
+    [20, 40, 5, 'corridor', 6, [{type:'chase',count:6},{type:'patrol',count:4},{type:'roam',count:2}], 'boss'],
     // 41-45
     [19, 48, 5, 'maze',     7, [{type:'chase',count:5},{type:'patrol',count:3}], false],
     [20, 46, 5, 'maze',     8, [{type:'chase',count:5},{type:'patrol',count:3}], false],
-    [20, 44, 5, 'cross',   10, [{type:'chase',count:6},{type:'patrol',count:2}], false],
+    [20, 44, 5, 'cross',   10, [{type:'chase',count:6},{type:'patrol',count:2}], 'hard'],
     [20, 42, 5, 'ring',    10, [{type:'chase',count:6},{type:'patrol',count:3}], false],
-    [20, 40, 5, 'corridor', 5, [{type:'chase',count:7},{type:'patrol',count:3}], true],
+    [20, 40, 5, 'corridor', 5, [{type:'chase',count:7},{type:'patrol',count:3}], false],
     // 46-50: NIGHTMARE
     [20, 42, 5, 'maze',    10, [{type:'chase',count:6},{type:'patrol',count:4}], false],
-    [20, 40, 5, 'islands', 10, [{type:'chase',count:7},{type:'patrol',count:3}], false],
+    [20, 40, 5, 'islands', 10, [{type:'chase',count:7},{type:'patrol',count:3}], 'hard'],
     [20, 38, 5, 'cross',   10, [{type:'chase',count:7},{type:'patrol',count:4}], false],
     [20, 36, 5, 'ring',    10, [{type:'chase',count:8},{type:'patrol',count:4}], false],
-    [20, 35, 5, 'maze',    10, [{type:'chase',count:8},{type:'patrol',count:5}], true],
+    [20, 32, 5, 'maze',    10, [{type:'chase',count:9},{type:'patrol',count:5},{type:'roam',count:2}], 'boss'],
+    // ── CHAPTER 2: STAGES 51-60 ──────────────────────────────────────────
+    [20, 38, 5, 'cross',   10, [{type:'chase',count:8},{type:'patrol',count:4}], false],
+    [20, 36, 5, 'islands', 10, [{type:'chase',count:8},{type:'patrol',count:4}], false],
+    [20, 36, 5, 'ring',    10, [{type:'chase',count:9},{type:'patrol',count:3}], false],
+    [20, 34, 5, 'maze',    10, [{type:'chase',count:9},{type:'patrol',count:4}], 'hard'],
+    [20, 34, 5, 'corridor', 6, [{type:'chase',count:9},{type:'patrol',count:4}], false],
+    [20, 33, 5, 'cross',   10, [{type:'chase',count:9},{type:'patrol',count:5}], false],
+    [20, 32, 5, 'islands', 10, [{type:'chase',count:9},{type:'patrol',count:5}], false],
+    [20, 32, 5, 'ring',    10, [{type:'chase',count:10},{type:'patrol',count:4}], false],
+    [20, 30, 5, 'maze',    10, [{type:'chase',count:10},{type:'patrol',count:5}], 'hard'],
+    [22, 28, 5, 'maze',    10, [{type:'chase',count:10},{type:'patrol',count:6},{type:'roam',count:2}], 'boss'],
+    // ── STAGES 61-70 ──────────────────────────────────────────────────────
+    [20, 35, 5, 'corridor', 6, [{type:'chase',count:10},{type:'patrol',count:5}], false],
+    [20, 34, 5, 'cross',   10, [{type:'chase',count:10},{type:'patrol',count:5}], false],
+    [20, 33, 5, 'islands', 10, [{type:'chase',count:10},{type:'patrol',count:6}], false],
+    [20, 32, 5, 'ring',    10, [{type:'chase',count:11},{type:'patrol',count:5}], 'hard'],
+    [20, 31, 5, 'maze',    10, [{type:'chase',count:11},{type:'patrol',count:5}], false],
+    [20, 30, 5, 'corridor', 6, [{type:'chase',count:11},{type:'patrol',count:6}], false],
+    [20, 30, 5, 'cross',   10, [{type:'chase',count:11},{type:'patrol',count:6}], false],
+    [20, 28, 5, 'islands', 10, [{type:'chase',count:12},{type:'patrol',count:5}], 'hard'],
+    [20, 27, 5, 'ring',    10, [{type:'chase',count:12},{type:'patrol',count:6}], false],
+    [24, 25, 5, 'maze',    10, [{type:'chase',count:12},{type:'patrol',count:7},{type:'roam',count:3}], 'boss'],
+    // ── STAGES 71-80 ──────────────────────────────────────────────────────
+    [20, 32, 5, 'corridor', 6, [{type:'chase',count:12},{type:'patrol',count:6}], false],
+    [20, 31, 5, 'cross',   10, [{type:'chase',count:12},{type:'patrol',count:7}], false],
+    [20, 30, 5, 'islands', 10, [{type:'chase',count:13},{type:'patrol',count:6}], false],
+    [20, 29, 5, 'ring',    10, [{type:'chase',count:13},{type:'patrol',count:7}], 'hard'],
+    [20, 28, 5, 'maze',    10, [{type:'chase',count:13},{type:'patrol',count:7}], false],
+    [20, 27, 5, 'corridor', 6, [{type:'chase',count:14},{type:'patrol',count:6}], false],
+    [20, 26, 5, 'cross',   10, [{type:'chase',count:14},{type:'patrol',count:7}], false],
+    [20, 25, 5, 'islands', 10, [{type:'chase',count:14},{type:'patrol',count:8}], 'hard'],
+    [20, 24, 5, 'ring',    10, [{type:'chase',count:15},{type:'patrol',count:7}], false],
+    [25, 22, 5, 'maze',    10, [{type:'chase',count:15},{type:'patrol',count:8},{type:'roam',count:3}], 'boss'],
+    // ── STAGES 81-90 ──────────────────────────────────────────────────────
+    [20, 28, 5, 'corridor', 6, [{type:'chase',count:14},{type:'patrol',count:8}], false],
+    [20, 27, 5, 'cross',   10, [{type:'chase',count:15},{type:'patrol',count:8}], false],
+    [20, 26, 5, 'islands', 10, [{type:'chase',count:15},{type:'patrol',count:9}], false],
+    [20, 25, 5, 'ring',    10, [{type:'chase',count:16},{type:'patrol',count:8}], 'hard'],
+    [20, 24, 5, 'maze',    10, [{type:'chase',count:16},{type:'patrol',count:8}], false],
+    [20, 23, 5, 'corridor', 6, [{type:'chase',count:16},{type:'patrol',count:9}], false],
+    [20, 22, 5, 'cross',   10, [{type:'chase',count:17},{type:'patrol',count:8}], false],
+    [20, 21, 5, 'islands', 10, [{type:'chase',count:17},{type:'patrol',count:9}], 'hard'],
+    [20, 20, 5, 'ring',    10, [{type:'chase',count:18},{type:'patrol',count:9}], false],
+    [25, 20, 5, 'maze',    10, [{type:'chase',count:18},{type:'patrol',count:10},{type:'roam',count:4}], 'boss'],
+    // ── STAGES 91-100: FINAL CHAPTER ──────────────────────────────────────
+    [20, 25, 5, 'corridor', 6, [{type:'chase',count:17},{type:'patrol',count:10}], false],
+    [20, 24, 5, 'cross',   10, [{type:'chase',count:18},{type:'patrol',count:10}], false],
+    [20, 23, 5, 'islands', 10, [{type:'chase',count:18},{type:'patrol',count:11}], false],
+    [20, 22, 5, 'ring',    10, [{type:'chase',count:19},{type:'patrol',count:10}], 'hard'],
+    [20, 21, 5, 'maze',    10, [{type:'chase',count:19},{type:'patrol',count:11}], false],
+    [20, 20, 5, 'corridor', 6, [{type:'chase',count:20},{type:'patrol',count:10}], false],
+    [20, 19, 5, 'cross',   10, [{type:'chase',count:20},{type:'patrol',count:11}], false],
+    [20, 18, 5, 'islands', 10, [{type:'chase',count:20},{type:'patrol',count:12}], 'hard'],
+    [20, 17, 5, 'ring',    10, [{type:'chase',count:20},{type:'patrol',count:12}], false],
+    [30, 15, 5, 'maze',    10, [{type:'chase',count:20},{type:'patrol',count:15},{type:'roam',count:5}], 'boss'],
   ];
 
   // Map obstacle templates (relative to 20×20 grid)
@@ -1756,13 +1914,18 @@
     const grid = document.getElementById('stage-grid');
     grid.innerHTML = '';
     for (let i = 0; i < STAGES.length; i++) {
-      const isHard = STAGES[i][6];
+      const stageType = STAGES[i][6]; // false | 'hard' | 'boss'
+      const isBoss = stageType === 'boss';
+      const isHard = stageType === 'hard';
       const isLocked = i > unlocked;
       const stars = scores[i] || 0;
       const cell = document.createElement('div');
-      cell.className = 'stage-cell' + (isLocked ? ' locked' : '') + (isHard ? ' hard' : '');
+      cell.className = 'stage-cell'
+        + (isLocked ? ' locked' : '')
+        + (isBoss ? ' boss' : isHard ? ' hard' : '');
       const starsStr = isLocked ? '🔒' : (stars ? '★'.repeat(stars) + '☆'.repeat(3-stars) : '☆☆☆');
-      cell.innerHTML = `<div class="cell-num">${i+1}</div>${isHard?'<div class="cell-hard">HARD</div>':''}<div class="cell-stars">${starsStr}</div>`;
+      const label = isBoss ? '<div class="cell-boss">⚔ BOSS</div>' : isHard ? '<div class="cell-hard">HARD</div>' : '';
+      cell.innerHTML = `<div class="cell-num">${i+1}</div>${label}<div class="cell-stars">${starsStr}</div>`;
       if (!isLocked) {
         cell.addEventListener('click', () => { ensureAudio(); startStage(i); });
       }
@@ -1794,6 +1957,10 @@
 
   function updateMonsters() {
     if (!isStageMode || monsters.length === 0) return;
+    if (frostActive) {
+      if (Date.now() > frostExpires) frostActive = false;
+      else return; // frozen
+    }
     const now = Date.now();
     const DIRS4 = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
     monsters.forEach(m => {
@@ -1933,6 +2100,11 @@
     nextBonusTime = Date.now() + BONUS_SPAWN_MIN + Math.random() * BONUS_SPAWN_RAND;
     wrapper.classList.remove('wall-warning', 'wall-active');
 
+    // Reset snake power state
+    flipShield = (selectedSnake === 'flip') ? 1 : 0;
+    frostActive = false; frostExpires = 0; frostCooldown = 0;
+    fireball = null; fireCooldown = 0;
+
     // Stage-specific
     stageFoodTarget = foodsToWin;
     stageFoodEaten = 0;
@@ -1972,6 +2144,12 @@
 
     gameState = 'playing';
     cancelAnimationFrame(animFrame);
+
+    // Boss stage fanfare
+    if (STAGES[idx][6] === 'boss') {
+      [220,180,160].forEach((f,i)=>setTimeout(()=>playTone(f,0.18,'sawtooth',0.12),i*120));
+    }
+
     draw();
   }
 
@@ -1999,8 +2177,6 @@
     checkBonusTimers();
     updateMonsters();
 
-    if (checkMonsterCollision()) { endStage(false); return; }
-
     dir = nextDir;
     const noWalls = bonusEffect?.type === 'nowalls';
     const ghost   = bonusEffect?.type === 'ghost';
@@ -2010,6 +2186,26 @@
       if (speedTrail.length > 5) speedTrail.shift();
     } else { speedTrail = []; }
 
+    // Move fireball
+    if (fireball) {
+      fireball.x += fireball.dx; fireball.y += fireball.dy;
+      if (fireball.x < 0 || fireball.x >= COLS || fireball.y < 0 || fireball.y >= ROWS
+          || obstacles.some(o=>o.x===fireball.x&&o.y===fireball.y)) {
+        fireball = null;
+      } else {
+        const hitIdx = monsters.findIndex(m=>m.x===fireball.x&&m.y===fireball.y);
+        if (hitIdx !== -1) {
+          spawnParticles(fireball.x,fireball.y,'#ff6600',14);
+          spawnFloater(fireball.x,fireball.y,'💥','#ff6600');
+          monsters.splice(hitIdx,1); fireball = null;
+          playTone(440,0.15,'sawtooth',0.12);
+        }
+      }
+    }
+
+    // Check if monster walked into snake head (monster moved this tick)
+    if (!ghost && monsters.some(m=>m.x===snake[0].x&&m.y===snake[0].y)) { endStage(false); return; }
+
     let hx = snake[0].x + dir.x, hy = snake[0].y + dir.y;
     if (noWalls) {
       if (hx < 0 || hx >= COLS || hy < 0 || hy >= ROWS) { endStage(false); return; }
@@ -2018,9 +2214,18 @@
     }
     const head = {x:hx,y:hy};
 
-    if (!ghost && stageObsSet.some(o=>o.x===head.x&&o.y===head.y)) { endStage(false); return; }
-    if (!ghost && snake.some(s=>s.x===head.x&&s.y===head.y)) { endStage(false); return; }
-    if (!ghost && checkMonsterCollision()) { endStage(false); return; }
+    // Flip shield: absorbs one obstacle/self-collision
+    if (!ghost && (obstacles.some(o=>o.x===head.x&&o.y===head.y) || snake.slice(1).some(s=>s.x===head.x&&s.y===head.y))) {
+      if (selectedSnake === 'flip' && flipShield > 0) {
+        flipShield--;
+        nextDir = {x:-dir.x, y:-dir.y};
+        spawnParticles(snake[0].x,snake[0].y,'#ff8800',10);
+        spawnFloater(snake[0].x,snake[0].y,'FLIP!','#ff8800');
+        draw(); return;
+      }
+      endStage(false); return;
+    }
+    if (!ghost && monsters.some(m=>m.x===head.x&&m.y===head.y)) { endStage(false); return; }
 
     // Portal teleport
     const portalIdx = portals.findIndex(p=>p.x===head.x&&p.y===head.y);
@@ -2112,7 +2317,7 @@
 
   // ── Helpers ────────────────────────────────────────────────────────────
   function hideAllOverlays() {
-    ['start-screen','stage-select-screen','stagewin-screen','gameover-screen']
+    ['start-screen','snake-select-screen','stage-select-screen','stagewin-screen','gameover-screen']
       .forEach(id => document.getElementById(id).classList.add('hidden'));
   }
 
@@ -2130,6 +2335,84 @@
     idleDraw();
   }
 
+  // ── Snake Select ──────────────────────────────────────────────────────
+  const SNAKE_DEFS = [
+    { id:'classic', icon:'🐍', name:'CLASSIC',  color:'#39ff14', desc:'Standard snake.\nNo special power.' },
+    { id:'frost',   icon:'❄️', name:'FROST',    color:'#00ccff', desc:'FREEZE: tap to freeze\nall enemies for 3s.\n15s cooldown.' },
+    { id:'flip',    icon:'🔄', name:'FLIP',     color:'#ff8800', desc:'FLIP: absorbs one\nobstacle/wall hit.\n1 shield per stage.' },
+    { id:'fire',    icon:'🔥', name:'FIRE',     color:'#ff4422', desc:'SHOOT: tap to fire\na fireball at enemies.\n10s cooldown.' },
+  ];
+
+  function showSnakeSelect() {
+    hideAllOverlays();
+    document.getElementById('snake-select-screen').classList.remove('hidden');
+    buildSnakeCards();
+  }
+
+  function buildSnakeCards() {
+    const grid = document.getElementById('snake-grid');
+    grid.innerHTML = '';
+    SNAKE_DEFS.forEach(def => {
+      const card = document.createElement('div');
+      card.className = 'snake-card ' + def.id + (selectedSnake === def.id ? ' selected' : '');
+      card.innerHTML = `<div class="sn-icon">${def.icon}</div>
+        <div class="sn-name">${def.name}</div>
+        <div class="sn-desc">${def.desc.replace(/\n/g,'<br>')}</div>`;
+      card.addEventListener('click', () => {
+        selectedSnake = def.id;
+        document.querySelectorAll('.snake-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        playTone(440, 0.08, 'square', 0.08);
+        setTimeout(() => showMainMenu(), 350);
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  function updatePowerBtn() {
+    const btn = document.getElementById('power-btn');
+    btn.className = 'power-btn ' + selectedSnake + '-pwr';
+    if (selectedSnake === 'classic') { btn.style.display = 'none'; return; }
+    btn.style.display = '';
+    const now = Date.now();
+    if (selectedSnake === 'frost') {
+      if (frostActive) { btn.textContent = '❄ FROZEN'; btn.disabled = true; }
+      else if (now < frostCooldown) { btn.textContent = '❄ ' + Math.ceil((frostCooldown-now)/1000) + 's'; btn.disabled = true; }
+      else { btn.textContent = '❄ FREEZE'; btn.disabled = false; }
+    } else if (selectedSnake === 'flip') {
+      btn.textContent = '🔄 SHIELD:' + flipShield;
+      btn.disabled = flipShield === 0;
+    } else if (selectedSnake === 'fire') {
+      if (now < fireCooldown) { btn.textContent = '🔥 ' + Math.ceil((fireCooldown-now)/1000) + 's'; btn.disabled = true; }
+      else { btn.textContent = '🔥 SHOOT'; btn.disabled = false; }
+    }
+  }
+
+  function activatePower() {
+    if (!isStageMode || gameState !== 'playing') return;
+    ensureAudio();
+    const now = Date.now();
+    if (selectedSnake === 'frost' && !frostActive && now >= frostCooldown) {
+      frostActive = true;
+      frostExpires = now + 3000;
+      frostCooldown = now + 15000;
+      spawnParticles(snake[0].x, snake[0].y, '#00ccff', 10);
+      playTone(330, 0.2, 'triangle', 0.1);
+      setTimeout(() => playTone(220, 0.15, 'triangle', 0.08), 150);
+    } else if (selectedSnake === 'fire' && now >= fireCooldown && !fireball) {
+      fireball = { x: snake[0].x + dir.x, y: snake[0].y + dir.y, dx: dir.x, dy: dir.y };
+      fireCooldown = now + 10000;
+      playTone(880, 0.08, 'square', 0.12);
+    }
+  }
+
+  // Power button cooldown display loop
+  function powerBtnLoop() {
+    if (isStageMode && gameState === 'playing') updatePowerBtn();
+    requestAnimationFrame(powerBtnLoop);
+  }
+  powerBtnLoop();
+
   // ── Stage Button Listeners ─────────────────────────────────────────────
   document.getElementById('stage-menu-btn').addEventListener('click', e => {
     e.stopPropagation(); ensureAudio(); showStageSelect();
@@ -2137,6 +2420,18 @@
 
   document.getElementById('daily-menu-btn').addEventListener('click', e => {
     e.stopPropagation(); ensureAudio(); startGame(true);
+  });
+
+  document.getElementById('snake-menu-btn').addEventListener('click', e => {
+    e.stopPropagation(); ensureAudio(); showSnakeSelect();
+  });
+
+  document.getElementById('snake-back-btn').addEventListener('click', e => {
+    e.stopPropagation(); showMainMenu();
+  });
+
+  document.getElementById('power-btn').addEventListener('click', e => {
+    e.stopPropagation(); activatePower();
   });
 
   document.getElementById('store-menu-btn').addEventListener('click', e => {
