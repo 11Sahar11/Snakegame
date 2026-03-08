@@ -716,7 +716,7 @@
       text-shadow: 0 0 8px var(--green), 0 0 28px rgba(57,255,20,0.5);
     }
 
-    #snake-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 310px; }
+    #snake-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; max-width: 360px; }
 
     .snake-card {
       display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -790,6 +790,46 @@
     .snake-card.fire:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 22px rgba(255,65,30,0.4), 0 8px 24px rgba(0,0,0,0.6); }
     .snake-card.fire.selected { box-shadow: 0 0 28px rgba(255,65,30,0.5), 0 8px 24px rgba(0,0,0,0.6); }
 
+    .snake-card.shadow {
+      border-color: rgba(153,51,255,0.5);
+      color: #9933ff;
+      background: linear-gradient(160deg, rgba(15,0,30,0.97) 0%, rgba(8,0,18,0.97) 100%);
+    }
+    .snake-card.shadow:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 22px rgba(153,51,255,0.4), 0 8px 24px rgba(0,0,0,0.6); }
+    .snake-card.shadow.selected { box-shadow: 0 0 28px rgba(153,51,255,0.5), 0 8px 24px rgba(0,0,0,0.6); }
+
+    .snake-card.thunder {
+      border-color: rgba(255,221,0,0.5);
+      color: #ffdd00;
+      background: linear-gradient(160deg, rgba(26,22,0,0.97) 0%, rgba(14,12,0,0.97) 100%);
+    }
+    .snake-card.thunder:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 22px rgba(255,221,0,0.4), 0 8px 24px rgba(0,0,0,0.6); }
+    .snake-card.thunder.selected { box-shadow: 0 0 28px rgba(255,221,0,0.5), 0 8px 24px rgba(0,0,0,0.6); }
+
+    .snake-card.magnet {
+      border-color: rgba(0,255,204,0.5);
+      color: #00ffcc;
+      background: linear-gradient(160deg, rgba(0,22,18,0.97) 0%, rgba(0,12,10,0.97) 100%);
+    }
+    .snake-card.magnet:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 22px rgba(0,255,204,0.4), 0 8px 24px rgba(0,0,0,0.6); }
+    .snake-card.magnet.selected { box-shadow: 0 0 28px rgba(0,255,204,0.5), 0 8px 24px rgba(0,0,0,0.6); }
+
+    .snake-card.venom {
+      border-color: rgba(170,255,0,0.5);
+      color: #aaff00;
+      background: linear-gradient(160deg, rgba(12,22,0,0.97) 0%, rgba(6,12,0,0.97) 100%);
+    }
+    .snake-card.venom:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 22px rgba(170,255,0,0.4), 0 8px 24px rgba(0,0,0,0.6); }
+    .snake-card.venom.selected { box-shadow: 0 0 28px rgba(170,255,0,0.5), 0 8px 24px rgba(0,0,0,0.6); }
+
+    .snake-card.storm {
+      border-color: rgba(136,170,255,0.5);
+      color: #88aaff;
+      background: linear-gradient(160deg, rgba(6,12,26,0.97) 0%, rgba(3,6,16,0.97) 100%);
+    }
+    .snake-card.storm:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 22px rgba(136,170,255,0.4), 0 8px 24px rgba(0,0,0,0.6); }
+    .snake-card.storm.selected { box-shadow: 0 0 28px rgba(136,170,255,0.5), 0 8px 24px rgba(0,0,0,0.6); }
+
     /* ════════════════════════════════════════════════════════
        POWER BUTTON
     ════════════════════════════════════════════════════════ */
@@ -813,6 +853,37 @@
     }
     #power-btn.fire-pwr { border-color: rgba(255,65,30,0.65); color: #ff5533; background: rgba(255,65,30,0.07); }
     #power-btn.fire-pwr:hover:not(:disabled) { background: rgba(255,65,30,0.16); box-shadow: 0 0 14px rgba(255,65,30,0.45); transform: scale(1.05); }
+    #power-btn.shadow-pwr { border-color: rgba(153,51,255,0.65); color: #9933ff; background: rgba(153,51,255,0.07); }
+    #power-btn.shadow-pwr:hover:not(:disabled) { background: rgba(153,51,255,0.16); box-shadow: 0 0 14px rgba(153,51,255,0.45); transform: scale(1.05); }
+    #power-btn.thunder-pwr { border-color: rgba(255,221,0,0.65); color: #ffdd00; background: rgba(255,221,0,0.07); }
+    #power-btn.thunder-pwr:hover:not(:disabled) { background: rgba(255,221,0,0.16); box-shadow: 0 0 14px rgba(255,221,0,0.45); transform: scale(1.05); }
+    #power-btn.magnet-pwr { border-color: rgba(0,255,204,0.65); color: #00ffcc; background: rgba(0,255,204,0.07); }
+    #power-btn.magnet-pwr:hover:not(:disabled) { background: rgba(0,255,204,0.16); box-shadow: 0 0 14px rgba(0,255,204,0.45); transform: scale(1.05); }
+    #power-btn.venom-pwr { border-color: rgba(170,255,0,0.65); color: #aaff00; background: rgba(170,255,0,0.07); }
+    #power-btn.venom-pwr:hover:not(:disabled) { background: rgba(170,255,0,0.16); box-shadow: 0 0 14px rgba(170,255,0,0.45); transform: scale(1.05); }
+    #power-btn.storm-pwr { border-color: rgba(136,170,255,0.65); color: #88aaff; background: rgba(136,170,255,0.07); }
+    #power-btn.storm-pwr:hover:not(:disabled) { background: rgba(136,170,255,0.16); box-shadow: 0 0 14px rgba(136,170,255,0.45); transform: scale(1.05); }
+
+    /* ── Music visualizer bars ── */
+    #music-viz {
+      display: flex; gap: 2.5px; align-items: flex-end; height: 18px;
+      margin-bottom: 2px; opacity: 0.55;
+    }
+    #music-viz span {
+      width: 3px; border-radius: 1.5px;
+      background: var(--green);
+      box-shadow: 0 0 5px var(--green);
+      animation: vizPulse 0.9s ease-in-out infinite;
+    }
+    #music-viz span:nth-child(1) { animation-delay: 0s;     animation-duration: 0.85s; }
+    #music-viz span:nth-child(2) { animation-delay: 0.18s;  animation-duration: 1.05s; }
+    #music-viz span:nth-child(3) { animation-delay: 0.34s;  animation-duration: 0.75s; }
+    #music-viz span:nth-child(4) { animation-delay: 0.52s;  animation-duration: 0.95s; }
+    #music-viz span:nth-child(5) { animation-delay: 0.68s;  animation-duration: 1.15s; }
+    @keyframes vizPulse {
+      0%,100% { height: 3px; opacity: 0.35; }
+      50%      { height: 16px; opacity: 0.8; }
+    }
 
     /* ════════════════════════════════════════════════════════
        RESPONSIVE
@@ -829,15 +900,17 @@
       .stage-cell.locked { width: 44px; height: 44px; }
       .stage-cell .cell-num { font-size: 0.95rem; }
       .cc-row { gap: 14px; }
-      #snake-grid { max-width: 290px; }
-      .snake-card { padding: 11px 8px 10px; }
-      .snake-card .sn-icon { font-size: 1.5rem; }
+      #snake-grid { max-width: 330px; }
+      .snake-card { padding: 9px 6px 8px; }
+      .snake-card .sn-icon { font-size: 1.4rem; }
+      .snake-card .sn-desc { font-size: 0.44rem; }
     }
   </style>
 </head>
 <body>
 
   <h1>SNAKE</h1>
+  <div id="music-viz"><span></span><span></span><span></span><span></span><span></span></div>
 
   <div id="score-panel">
     <div class="score-item">SCORE: <span id="score-display">0</span></div>
@@ -1064,6 +1137,16 @@
   let flipShield = 0;
   let frostActive = false, frostExpires = 0, frostCooldown = 0;
   let fireball = null, fireCooldown = 0;
+  // New snake power states
+  let shadowCooldown = 0, shadowExpires = 0;
+  let thunderCooldown = 0;
+  let magnetCooldown = 0;
+  let venomCooldown = 0, venomCells = [];
+  let stormCooldown = 0, stormStunExpires = 0;
+  // Background music
+  let bgMusicInterval = null, bgNoteIdx = 0;
+  // Double-tap tracking
+  let _lastTap = 0;
   // Loop
   let foodPulse = 0, bonusPulse = 0;
   let intervalId = null, animFrame, effectBarFrame;
@@ -1075,12 +1158,14 @@
 
   // ── Audio ───────────────────────────────────────────────────────────
   function ensureAudio() {
+    const wasNull = !audioCtx;
     if (!audioCtx) {
       try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
     }
     if (audioCtx && audioCtx.state === 'suspended') {
       try { audioCtx.resume(); } catch(e) {}
     }
+    if (wasNull && audioCtx) setTimeout(startBgMusic, 400);
   }
 
   function playTone(freq, dur, type = 'square', vol = 0.13) {
@@ -1145,6 +1230,35 @@
     const f = [220, 330, 440, 550][mult - 1] || 550;
     playTone(f, 0.06, 'square', 0.08);
     setTimeout(() => playTone(f * 1.5, 0.08, 'square', 0.1), 50);
+  }
+
+  // ── Background Music (ambient chiptune) ────────────────────────────
+  // E minor pentatonic melody, gentle & looping
+  const BG_MELODY = [
+    [330,0.14],[294,0.08],[262,0.08],[294,0.08],
+    [330,0.14],[392,0.08],[440,0.08],[392,0.08],
+    [330,0.14],[294,0.08],[247,0.08],[220,0.08],
+    [247,0.08],[262,0.08],[294,0.14],[330,0.08],
+    [392,0.14],[330,0.08],[294,0.08],[330,0.08],
+    [440,0.14],[392,0.08],[330,0.08],[294,0.08],
+    [262,0.14],[220,0.08],[247,0.08],[262,0.08],
+    [294,0.14],[330,0.08],[294,0.08],[262,0.08]
+  ];
+  const BG_STEP_MS = 200;
+
+  function startBgMusic() {
+    if (bgMusicInterval || !audioCtx) return;
+    bgNoteIdx = 0;
+    bgMusicInterval = setInterval(() => {
+      if (!audioCtx) return;
+      const [freq, dur] = BG_MELODY[bgNoteIdx % BG_MELODY.length];
+      playTone(freq, dur * BG_STEP_MS / 1000 * 0.85, 'triangle', 0.032);
+      bgNoteIdx++;
+    }, BG_STEP_MS);
+  }
+
+  function stopBgMusic() {
+    if (bgMusicInterval) { clearInterval(bgMusicInterval); bgMusicInterval = null; }
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────
@@ -1623,48 +1737,108 @@
 
     const t = Date.now() / 1000;
 
-    // Background
-    ctx.fillStyle = '#0a1120';
+    // Background — dark floor with subtle radial glow
+    ctx.fillStyle = '#07111f';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Center glow
+    const bgGrad = ctx.createRadialGradient(canvas.width/2,canvas.height/2,0,canvas.width/2,canvas.height/2,canvas.width*0.7);
+    bgGrad.addColorStop(0, 'rgba(20,50,35,0.18)');
+    bgGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // Grid
-    ctx.strokeStyle = '#162030'; ctx.lineWidth = 0.5;
+    // Perspective grid — lines slightly converge toward canvas center
+    const vanX = canvas.width/2, vanY = canvas.height/2;
+    ctx.lineWidth = 0.5;
     for (let i = 0; i <= COLS; i++) {
-      ctx.beginPath(); ctx.moveTo(i*CELL, 0); ctx.lineTo(i*CELL, canvas.height); ctx.stroke();
+      const bx = i*CELL;
+      const lean = (bx - vanX) * 0.018;
+      const brightness = Math.max(0.015, 0.04 - Math.abs(bx-vanX)/canvas.width*0.03);
+      ctx.strokeStyle = `rgba(57,255,20,${brightness})`;
+      ctx.beginPath(); ctx.moveTo(bx - lean, 0); ctx.lineTo(bx + lean, canvas.height); ctx.stroke();
     }
     for (let j = 0; j <= ROWS; j++) {
-      ctx.beginPath(); ctx.moveTo(0, j*CELL); ctx.lineTo(canvas.width, j*CELL); ctx.stroke();
+      const by = j*CELL;
+      const lean = (by - vanY) * 0.018;
+      const brightness = Math.max(0.015, 0.04 - Math.abs(by-vanY)/canvas.height*0.03);
+      ctx.strokeStyle = `rgba(57,255,20,${brightness})`;
+      ctx.beginPath(); ctx.moveTo(0, by - lean); ctx.lineTo(canvas.width, by + lean); ctx.stroke();
     }
 
-    // Obstacles
+    // 3D Obstacles — dark stone blocks with bevel
     obstacles.forEach(o => {
+      const ox = o.x*CELL, oy = o.y*CELL;
       ctx.save();
-      ctx.shadowColor = '#ff7722'; ctx.shadowBlur = 6;
-      ctx.fillStyle = '#1e2a1a';
-      roundRect(ctx, o.x*CELL+1, o.y*CELL+1, CELL-2, CELL-2, 3);
+      // Base dark stone
+      ctx.shadowColor = 'rgba(255,100,30,0.25)'; ctx.shadowBlur = 8;
+      ctx.fillStyle = '#141820';
+      roundRect(ctx, ox+1, oy+1, CELL-2, CELL-2, 3);
       ctx.fill();
-      ctx.strokeStyle = '#5a3a18'; ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(255,120,40,0.3)'; ctx.lineWidth = 0.5;
-      ctx.beginPath();
-      ctx.moveTo(o.x*CELL+3, o.y*CELL+CELL-3);
-      ctx.lineTo(o.x*CELL+3, o.y*CELL+3);
-      ctx.lineTo(o.x*CELL+CELL-3, o.y*CELL+3);
+      ctx.shadowBlur = 0;
+      // Top bevel (lighter)
+      ctx.fillStyle = 'rgba(80,90,110,0.45)';
+      ctx.fillRect(ox+2, oy+2, CELL-4, 3);
+      // Left bevel
+      ctx.fillStyle = 'rgba(80,90,110,0.3)';
+      ctx.fillRect(ox+2, oy+2, 3, CELL-4);
+      // Bottom shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(ox+2, oy+CELL-5, CELL-4, 3);
+      // Right shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillRect(ox+CELL-5, oy+2, 3, CELL-4);
+      // Stone texture dots
+      ctx.fillStyle = 'rgba(50,55,65,0.7)';
+      [[0.28,0.32],[0.62,0.52],[0.38,0.7],[0.7,0.28]].forEach(([dx,dy]) => {
+        ctx.beginPath(); ctx.arc(ox+CELL*dx, oy+CELL*dy, 1.2, 0, Math.PI*2); ctx.fill();
+      });
+      // Orange edge glow
+      ctx.strokeStyle = 'rgba(255,110,30,0.18)'; ctx.lineWidth = 1;
+      roundRect(ctx, ox+1, oy+1, CELL-2, CELL-2, 3);
       ctx.stroke();
       ctx.restore();
     });
 
+    // Venom cells (toxic puddles)
+    if (venomCells.length > 0) {
+      const nowMs = Date.now();
+      venomCells = venomCells.filter(v => nowMs < v.expiresAt);
+      venomCells.forEach(v => {
+        const alpha = Math.min(1, (v.expiresAt - nowMs) / 1200) * 0.65;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.shadowColor = '#aaff00'; ctx.shadowBlur = 12;
+        const gv = ctx.createRadialGradient(v.x*CELL+CELL/2,v.y*CELL+CELL/2,1,v.x*CELL+CELL/2,v.y*CELL+CELL/2,CELL*0.44);
+        gv.addColorStop(0, 'rgba(200,255,60,0.7)');
+        gv.addColorStop(1, 'rgba(80,200,0,0.1)');
+        ctx.fillStyle = gv;
+        ctx.beginPath(); ctx.arc(v.x*CELL+CELL/2, v.y*CELL+CELL/2, CELL*0.44, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+      });
+    }
+
     // Speed trail (drawn behind snake)
     drawSpeedTrail();
 
-    // Regular food (pulsing circle)
+    // Regular food — 3D glowing sphere with radial gradient
     const fp = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / 2);
-    const fR = CELL * 0.3 + fp * CELL * 0.1;
+    const fR = CELL * 0.3 + fp * CELL * 0.08;
+    const fCx = food.x*CELL + CELL/2, fCy = food.y*CELL + CELL/2;
     ctx.save();
-    ctx.shadowColor = '#ff2a6d'; ctx.shadowBlur = 10 + fp * 8;
-    ctx.fillStyle = '#ff2a6d';
+    ctx.shadowColor = '#ff2a6d'; ctx.shadowBlur = 14 + fp * 10;
+    const foodGrad = ctx.createRadialGradient(fCx - fR*0.32, fCy - fR*0.32, 0, fCx, fCy, fR);
+    foodGrad.addColorStop(0, '#ffaacc');
+    foodGrad.addColorStop(0.38, '#ff2a6d');
+    foodGrad.addColorStop(1, '#8a0030');
+    ctx.fillStyle = foodGrad;
     ctx.beginPath();
-    ctx.arc(food.x*CELL + CELL/2, food.y*CELL + CELL/2, fR, 0, Math.PI*2);
+    ctx.arc(fCx, fCy, fR, 0, Math.PI*2);
+    ctx.fill();
+    // Specular highlight
+    ctx.globalAlpha = 0.55;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(fCx - fR*0.28, fCy - fR*0.28, fR*0.22, 0, Math.PI*2);
     ctx.fill();
     ctx.restore();
 
@@ -1763,7 +1937,12 @@
       classic: { r:57,  g:255, b:20,  glow:'#39ff14' },
       frost:   { r:0,   g:200, b:255, glow:'#00ccff' },
       flip:    { r:255, g:140, b:0,   glow:'#ff8800' },
-      fire:    { r:255, g:55,  b:20,  glow:'#ff3311' }
+      fire:    { r:255, g:55,  b:20,  glow:'#ff3311' },
+      shadow:  { r:153, g:51,  b:255, glow:'#9933ff' },
+      thunder: { r:255, g:221, b:0,   glow:'#ffdd00' },
+      magnet:  { r:0,   g:255, b:204, glow:'#00ffcc' },
+      venom:   { r:170, g:255, b:0,   glow:'#aaff00' },
+      storm:   { r:136, g:170, b:255, glow:'#88aaff' },
     };
     const sc = SNAKE_COLORS[selectedSnake] || SNAKE_COLORS.classic;
     // Frost frozen glow overlay on monsters
@@ -1775,23 +1954,53 @@
     }
     snake.forEach((seg, i) => {
       const isHead = i === 0;
-      const brightness = isHead ? 1 : Math.max(0.4, 1 - i * 0.025);
+      const brightness = isHead ? 1 : Math.max(0.38, 1 - i * 0.028);
+      const pad = isHead ? 1 : 2;
+      const sx = seg.x*CELL+pad, sy = seg.y*CELL+pad;
+      const sw = CELL-pad*2, sh = CELL-pad*2;
+      const rr = isHead ? 4 : 3;
       ctx.save();
       if (ghostMode) {
-        ctx.globalAlpha = isHead ? 0.85 : Math.max(0.18, brightness * 0.55);
-        ctx.shadowColor = '#bf5fff'; ctx.shadowBlur = isHead ? 18 : 9;
-        ctx.fillStyle = `rgb(${Math.round(120*brightness)}, ${Math.round(15*brightness)}, ${Math.round(180*brightness)})`;
+        ctx.globalAlpha = isHead ? 0.82 : Math.max(0.15, brightness * 0.5);
+        ctx.shadowColor = '#bf5fff'; ctx.shadowBlur = isHead ? 20 : 10;
+        const gr = ctx.createLinearGradient(sx, sy, sx+sw, sy+sh);
+        gr.addColorStop(0, `rgba(180,80,255,${brightness})`);
+        gr.addColorStop(1, `rgba(80,0,150,${brightness})`);
+        ctx.fillStyle = gr;
       } else {
-        ctx.shadowColor = sc.glow; ctx.shadowBlur = isHead ? 14 : 7;
-        ctx.fillStyle = `rgb(${Math.round(sc.r*brightness)}, ${Math.round(sc.g*brightness)}, ${Math.round(sc.b*brightness)})`;
+        ctx.shadowColor = sc.glow; ctx.shadowBlur = isHead ? 16 : 8;
+        const r = Math.round(sc.r*brightness), g = Math.round(sc.g*brightness), b = Math.round(sc.b*brightness);
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
       }
-      const pad = isHead ? 1 : 2;
-      roundRect(ctx, seg.x*CELL+pad, seg.y*CELL+pad, CELL-pad*2, CELL-pad*2, isHead ? 4 : 3);
-      ctx.fill();
+      // Base block
+      roundRect(ctx, sx, sy, sw, sh, rr); ctx.fill();
+
+      // 3D top-highlight gradient
+      ctx.shadowBlur = 0;
+      const hl = ctx.createLinearGradient(sx, sy, sx, sy+sh*0.55);
+      hl.addColorStop(0, 'rgba(255,255,255,0.22)');
+      hl.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = hl;
+      roundRect(ctx, sx, sy, sw, sh, rr); ctx.fill();
+
+      // 3D left-highlight
+      const ll = ctx.createLinearGradient(sx, sy, sx+sw*0.4, sy);
+      ll.addColorStop(0, 'rgba(255,255,255,0.1)');
+      ll.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = ll;
+      roundRect(ctx, sx, sy, sw, sh, rr); ctx.fill();
+
+      // 3D bottom-right shadow
+      const sl = ctx.createLinearGradient(sx+sw*0.45, sy+sh*0.45, sx+sw, sy+sh);
+      sl.addColorStop(0, 'rgba(0,0,0,0)');
+      sl.addColorStop(1, 'rgba(0,0,0,0.38)');
+      ctx.fillStyle = sl;
+      roundRect(ctx, sx, sy, sw, sh, rr); ctx.fill();
+
       // Flip shield indicator: glowing ring
       if (isHead && selectedSnake === 'flip' && flipShield > 0) {
         ctx.shadowColor = '#ff8800'; ctx.shadowBlur = 20;
-        ctx.strokeStyle = 'rgba(255,140,0,0.6)'; ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255,140,0,0.65)'; ctx.lineWidth = 2;
         roundRect(ctx, seg.x*CELL-2, seg.y*CELL-2, CELL+4, CELL+4, 6);
         ctx.stroke();
       }
@@ -1930,10 +2139,21 @@
       // Let buttons handle their own taps
       const el = document.elementFromPoint(t.clientX, t.clientY);
       if (el && (el.tagName === 'BUTTON' || el.closest('button'))) return;
+      // Double-tap on canvas area activates power
+      const now = Date.now();
+      const wrapper2 = document.getElementById('canvas-wrapper');
+      const onCanvas = el && (el === canvas || el === wrapper2 || (wrapper2 && wrapper2.contains(el)));
+      if (onCanvas && gameState === 'playing' && now - _lastTap < 320) {
+        _lastTap = 0;
+        activatePower();
+        return;
+      }
+      _lastTap = now;
       if ((gameState === 'idle' || gameState === 'dead') && !isStageMode
           && document.getElementById('stage-select-screen').classList.contains('hidden')) startGame(false);
       return;
     }
+    _lastTap = 0;
     if (gameState !== 'playing') return;
     e.preventDefault();
 
@@ -2472,6 +2692,11 @@
     flipShield = (selectedSnake === 'flip') ? 1 : 0;
     frostActive = false; frostExpires = 0; frostCooldown = 0;
     fireball = null; fireCooldown = 0;
+    shadowCooldown = 0; shadowExpires = 0;
+    thunderCooldown = 0;
+    magnetCooldown = 0;
+    venomCooldown = 0; venomCells = [];
+    stormCooldown = 0; stormStunExpires = 0;
 
     // Stage-specific
     stageFoodTarget = foodsToWin;
@@ -2543,8 +2768,21 @@
 
   function stageTick() {
     checkBonusTimers();
-    updateMonsters();
-
+    // Storm stun: skip monster movement
+    if (Date.now() >= stormStunExpires) updateMonsters();
+    // Venom: kill monsters on venom cells
+    if (venomCells.length > 0) {
+      const nowMs = Date.now();
+      venomCells = venomCells.filter(v => nowMs < v.expiresAt);
+      monsters = monsters.filter(m => {
+        if (venomCells.some(v => v.x === m.x && v.y === m.y)) {
+          spawnParticles(m.x, m.y, '#aaff00', 8);
+          spawnFloater(m.x, m.y, '☠', '#aaff00');
+          return false;
+        }
+        return true;
+      });
+    }
     dir = nextDir;
     const noWalls = bonusEffect?.type === 'nowalls';
     const ghost   = bonusEffect?.type === 'ghost';
@@ -2709,6 +2947,11 @@
     { id:'frost',   icon:'❄️', name:'FROST',    color:'#00ccff', desc:'FREEZE: tap to freeze\nall enemies for 3s.\n15s cooldown.' },
     { id:'flip',    icon:'🔄', name:'FLIP',     color:'#ff8800', desc:'FLIP: absorbs one\nobstacle/wall hit.\n1 shield per stage.' },
     { id:'fire',    icon:'🔥', name:'FIRE',     color:'#ff4422', desc:'SHOOT: tap to fire\na fireball at enemies.\n10s cooldown.' },
+    { id:'shadow',  icon:'👤', name:'SHADOW',   color:'#9933ff', desc:'GHOST: pass through\nall obstacles for 5s.\n20s cooldown.' },
+    { id:'thunder', icon:'⚡', name:'THUNDER',  color:'#ffdd00', desc:'SPEED BURST:\nsuper fast for 3s.\n12s cooldown.' },
+    { id:'magnet',  icon:'🧲', name:'MAGNET',   color:'#00ffcc', desc:'PULL: teleport food\nto near your head.\n10s cooldown.' },
+    { id:'venom',   icon:'🐸', name:'VENOM',    color:'#aaff00', desc:'POISON: drop toxic\nzone, kills monsters.\n12s cooldown.' },
+    { id:'storm',   icon:'🌪', name:'STORM',    color:'#88aaff', desc:'STORM: stun all\nmonsters for 3s.\n18s cooldown.' },
   ];
 
   function showSnakeSelect() {
@@ -2753,6 +2996,24 @@
     } else if (selectedSnake === 'fire') {
       if (now < fireCooldown) { btn.textContent = '🔥 ' + Math.ceil((fireCooldown-now)/1000) + 's'; btn.disabled = true; }
       else { btn.textContent = '🔥 SHOOT'; btn.disabled = false; }
+    } else if (selectedSnake === 'shadow') {
+      if (now < shadowExpires) { btn.textContent = '👤 GHOSTED'; btn.disabled = true; }
+      else if (now < shadowCooldown) { btn.textContent = '👤 ' + Math.ceil((shadowCooldown-now)/1000) + 's'; btn.disabled = true; }
+      else { btn.textContent = '👤 GHOST'; btn.disabled = false; }
+    } else if (selectedSnake === 'thunder') {
+      if (bonusEffect?.type === 'speed' && now < thunderCooldown) { btn.textContent = '⚡ ZOOMING'; btn.disabled = true; }
+      else if (now < thunderCooldown) { btn.textContent = '⚡ ' + Math.ceil((thunderCooldown-now)/1000) + 's'; btn.disabled = true; }
+      else { btn.textContent = '⚡ SPEED'; btn.disabled = false; }
+    } else if (selectedSnake === 'magnet') {
+      if (now < magnetCooldown) { btn.textContent = '🧲 ' + Math.ceil((magnetCooldown-now)/1000) + 's'; btn.disabled = true; }
+      else { btn.textContent = '🧲 PULL'; btn.disabled = false; }
+    } else if (selectedSnake === 'venom') {
+      if (now < venomCooldown) { btn.textContent = '🐸 ' + Math.ceil((venomCooldown-now)/1000) + 's'; btn.disabled = true; }
+      else { btn.textContent = '🐸 POISON'; btn.disabled = false; }
+    } else if (selectedSnake === 'storm') {
+      if (now < stormStunExpires) { btn.textContent = '🌪 STUNNING'; btn.disabled = true; }
+      else if (now < stormCooldown) { btn.textContent = '🌪 ' + Math.ceil((stormCooldown-now)/1000) + 's'; btn.disabled = true; }
+      else { btn.textContent = '🌪 STORM'; btn.disabled = false; }
     }
   }
 
@@ -2771,6 +3032,52 @@
       fireball = { x: snake[0].x + dir.x, y: snake[0].y + dir.y, dx: dir.x, dy: dir.y };
       fireCooldown = now + 10000;
       playTone(880, 0.08, 'square', 0.12);
+    } else if (selectedSnake === 'shadow' && now >= shadowCooldown) {
+      shadowExpires = now + 5000;
+      shadowCooldown = now + 20000;
+      bonusEffect = { type: 'ghost', expiresAt: now + 5000 };
+      spawnParticles(snake[0].x, snake[0].y, '#9933ff', 12);
+      playTone(330, 0.18, 'triangle', 0.1);
+      setTimeout(() => playTone(440, 0.12, 'triangle', 0.08), 120);
+    } else if (selectedSnake === 'thunder' && now >= thunderCooldown) {
+      thunderCooldown = now + 12000;
+      bonusEffect = { type: 'speed', expiresAt: now + 3000 };
+      startLoop();
+      spawnParticles(snake[0].x, snake[0].y, '#ffdd00', 14);
+      playTone(880, 0.06, 'square', 0.14);
+      setTimeout(() => playTone(1100, 0.08, 'square', 0.12), 60);
+    } else if (selectedSnake === 'magnet' && now >= magnetCooldown) {
+      magnetCooldown = now + 10000;
+      const h = snake[0];
+      const candidates = [];
+      for (let dx = -3; dx <= 3; dx++) for (let dy = -3; dy <= 3; dy++) {
+        if (dx === 0 && dy === 0) continue;
+        const nx = (h.x+dx+COLS)%COLS, ny = (h.y+dy+ROWS)%ROWS;
+        if (!isOccupied({x:nx,y:ny})) candidates.push({x:nx,y:ny});
+      }
+      if (candidates.length) {
+        food = candidates[Math.floor(Math.random()*candidates.length)];
+        spawnParticles(food.x, food.y, '#00ffcc', 10);
+      }
+      playTone(550, 0.1, 'sine', 0.1);
+      setTimeout(() => playTone(660, 0.1, 'sine', 0.08), 80);
+    } else if (selectedSnake === 'venom' && now >= venomCooldown) {
+      venomCooldown = now + 12000;
+      const expiresAt = now + 5000;
+      snake.slice(0, Math.min(5, snake.length)).forEach(seg => {
+        if (!venomCells.some(v => v.x === seg.x && v.y === seg.y))
+          venomCells.push({ x: seg.x, y: seg.y, expiresAt });
+      });
+      spawnParticles(snake[0].x, snake[0].y, '#aaff00', 12);
+      playTone(220, 0.15, 'sawtooth', 0.1);
+      setTimeout(() => playTone(176, 0.1, 'sawtooth', 0.07), 100);
+    } else if (selectedSnake === 'storm' && now >= stormCooldown) {
+      stormCooldown = now + 18000;
+      stormStunExpires = now + 3000;
+      spawnParticles(snake[0].x, snake[0].y, '#88aaff', 16);
+      playTone(660, 0.15, 'triangle', 0.12);
+      setTimeout(() => playTone(550, 0.12, 'triangle', 0.1), 80);
+      setTimeout(() => playTone(440, 0.1, 'triangle', 0.08), 160);
     }
   }
 
