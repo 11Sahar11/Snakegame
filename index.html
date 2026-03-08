@@ -449,127 +449,178 @@
     body { -webkit-tap-highlight-color: transparent; }
 
     /* ════════════════════════════════════════════════════════
-       STAGE MODE — COMPLETE PREMIUM DESIGN
+       STAGE MODE — CANDY CRUSH WORLD MAP DESIGN
     ════════════════════════════════════════════════════════ */
 
-    /* Stage Select screen */
-    #stage-select-screen { overflow-y: auto; gap: 6px; padding: 10px 12px; }
+    /* Stage Select — FULL SCREEN fixed overlay */
+    #stage-select-screen {
+      position: fixed !important;
+      inset: 0; z-index: 200;
+      background: linear-gradient(180deg, #07091200 0%, #080d17 100%);
+      background-color: #080d17;
+      overflow-y: auto; overflow-x: hidden;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      gap: 0; padding: 0 0 30px 0;
+    }
+
+    /* Sticky header bar */
+    .stage-select-header {
+      position: sticky; top: 0; z-index: 10;
+      width: 100%; display: flex;
+      align-items: center; justify-content: center;
+      padding: 10px 16px 8px;
+      background: rgba(8,13,23,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(57,255,20,0.08);
+      gap: 12px;
+    }
 
     .stage-select-title {
-      font-family: 'Orbitron', monospace; font-size: 1.0rem;
-      letter-spacing: 0.35em; text-indent: 0.35em;
-      text-shadow: 0 0 8px var(--green), 0 0 28px rgba(57,255,20,0.55);
-      margin-bottom: 2px;
+      font-family: 'Orbitron', monospace; font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-shadow: 0 0 8px var(--green), 0 0 22px rgba(57,255,20,0.5);
+      flex: 1; text-align: center;
     }
 
-    /* Stage grid — tighter, richer cells */
+    /* Stage grid — Candy Crush column */
     #stage-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr);
-      gap: 5px; width: 100%; max-width: 315px; padding: 2px 0;
+      width: 100%; max-width: 400px;
+      display: flex; flex-direction: column;
+      align-items: center; padding: 0 12px 10px;
     }
 
-    /* Chapter label injected between rows by JS — but styled via CSS class */
-    .chapter-label {
-      grid-column: 1 / -1;
-      font-family: 'Orbitron', monospace; font-size: 0.5rem;
-      letter-spacing: 0.3em; color: rgba(57,255,20,0.3);
-      text-align: center; padding: 3px 0 1px;
-      border-top: 1px solid rgba(57,255,20,0.08);
-      margin-top: 2px;
+    /* Chapter / World header */
+    .cc-world-header {
+      width: 100%; text-align: center;
+      font-family: 'Orbitron', monospace; font-size: 0.6rem;
+      letter-spacing: 0.3em; padding: 12px 0 8px;
+      border-top: 1px solid; margin-top: 6px;
+      opacity: 0.85;
     }
 
+    /* Stage row — 3 bubbles */
+    .cc-row {
+      display: flex; justify-content: center;
+      align-items: center; gap: 18px;
+      padding: 6px 0; width: 100%;
+      position: relative;
+    }
+    .cc-row-reverse { flex-direction: row-reverse; }
+
+    /* Connector line between rows (vertical) */
+    .cc-connector {
+      width: 3px; height: 14px;
+      background: rgba(57,255,20,0.15);
+      border-radius: 2px;
+      margin: -2px auto;
+    }
+
+    /* Stage bubble */
     .stage-cell {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem; letter-spacing: 0.03em;
-      padding: 5px 2px; border-radius: 5px;
-      border: 1px solid rgba(57,255,20,0.2);
-      background: linear-gradient(160deg, rgba(10,22,38,0.95) 0%, rgba(5,12,22,0.95) 100%);
-      color: var(--green); cursor: pointer; text-align: center;
-      transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s, background 0.18s;
-      min-height: 50px; display: flex; flex-direction: column;
+      width: 66px; height: 66px;
+      border-radius: 50%;
+      border: 2.5px solid var(--cell-color, var(--green));
+      background: radial-gradient(ellipse at 35% 30%, rgba(255,255,255,0.06) 0%, rgba(5,12,22,0.98) 100%);
+      color: var(--cell-color, var(--green));
+      cursor: pointer; text-align: center;
+      display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 1px;
-      position: relative; overflow: hidden;
+      position: relative; flex-shrink: 0;
+      transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
     }
 
-    /* Inner shimmer on cells */
+    /* Top gloss */
     .stage-cell::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.035) 0%, transparent 55%);
+      content: ''; position: absolute;
+      top: 6px; left: 50%; transform: translateX(-50%);
+      width: 55%; height: 30%; border-radius: 50%;
+      background: rgba(255,255,255,0.09);
       pointer-events: none;
     }
 
     .stage-cell:hover:not(.locked) {
-      transform: scale(1.07);
-      background: linear-gradient(160deg, rgba(57,255,20,0.12) 0%, rgba(0,229,255,0.05) 100%);
-      box-shadow: 0 0 14px rgba(57,255,20,0.35), 0 4px 16px rgba(0,0,0,0.5);
+      transform: scale(1.12) translateY(-2px);
+      box-shadow: 0 0 22px var(--cell-color, var(--green)), 0 8px 20px rgba(0,0,0,0.6);
       z-index: 2;
     }
+    .stage-cell:active:not(.locked) { transform: scale(0.92); }
 
-    .stage-cell:active:not(.locked) { transform: scale(0.93); }
-
-    /* Locked cells */
+    /* Locked — small gray bubble */
     .stage-cell.locked {
-      color: rgba(57,255,20,0.15);
-      border-color: rgba(57,255,20,0.06);
-      background: linear-gradient(160deg, rgba(5,8,14,0.98) 0%, rgba(4,6,10,0.98) 100%);
-      cursor: not-allowed; opacity: 0.7;
+      width: 50px; height: 50px;
+      border-color: rgba(255,255,255,0.08);
+      background: rgba(8,12,20,0.95);
+      color: rgba(255,255,255,0.18);
+      cursor: not-allowed; opacity: 0.6;
+      box-shadow: none;
     }
+    .stage-cell.locked::before { display: none; }
 
-    /* Next-to-play: the first unlocked-but-not-completed cell */
+    /* Next-to-play — biggest, most prominent */
     .stage-cell.next-play {
-      border-color: rgba(57,255,20,0.7);
+      width: 74px; height: 74px;
+      border-width: 3px;
       animation: nextPlayPulse 1.8s ease-in-out infinite;
     }
 
     @keyframes nextPlayPulse {
-      0%,100% { box-shadow: 0 0 8px rgba(57,255,20,0.3); }
-      50%      { box-shadow: 0 0 18px rgba(57,255,20,0.6), 0 0 4px rgba(57,255,20,0.4) inset; }
+      0%,100% { box-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 0 14px var(--cell-color, var(--green)); }
+      50%      { box-shadow: 0 4px 18px rgba(0,0,0,0.6), 0 0 30px var(--cell-color, var(--green)), 0 0 8px var(--cell-color, var(--green)) inset; }
     }
 
-    /* Hard cells */
+    /* Hard — red tint */
     .stage-cell.hard {
-      border-color: rgba(255,80,80,0.55);
-      background: linear-gradient(160deg, rgba(25,6,6,0.95) 0%, rgba(12,3,3,0.95) 100%);
-    }
-    .stage-cell.hard:hover:not(.locked) {
-      background: linear-gradient(160deg, rgba(255,80,80,0.1) 0%, rgba(12,3,3,0.95) 100%);
-      box-shadow: 0 0 14px rgba(255,80,80,0.4), 0 4px 16px rgba(0,0,0,0.5);
+      --cell-color: #ff5555;
+      background: radial-gradient(ellipse at 35% 30%, rgba(255,80,80,0.08) 0%, rgba(18,4,4,0.98) 100%);
     }
 
-    /* Boss cells — crown + red-gold aura */
+    /* Boss — gold, bigger */
     .stage-cell.boss {
-      border: 1.5px solid rgba(255,180,0,0.55);
-      background: linear-gradient(160deg, rgba(30,12,0,0.98) 0%, rgba(20,4,0,0.98) 100%);
+      --cell-color: #ffb800;
+      background: radial-gradient(ellipse at 35% 30%, rgba(255,184,0,0.1) 0%, rgba(24,10,0,0.98) 100%);
+      border-width: 3px;
       animation: bossCellGlow 2.2s ease-in-out infinite;
     }
 
     @keyframes bossCellGlow {
-      0%,100% { box-shadow: 0 0 8px rgba(255,80,0,0.3),  0 0 2px rgba(255,180,0,0.2) inset; border-color: rgba(255,140,0,0.5); }
-      50%      { box-shadow: 0 0 18px rgba(255,80,0,0.55), 0 0 5px rgba(255,180,0,0.35) inset; border-color: rgba(255,200,0,0.8); }
+      0%,100% { box-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 0 10px rgba(255,150,0,0.4); }
+      50%      { box-shadow: 0 4px 18px rgba(0,0,0,0.6), 0 0 24px rgba(255,200,0,0.65); }
     }
+    .stage-cell.boss:hover:not(.locked) { animation: none; }
 
-    .stage-cell.boss:hover:not(.locked) {
-      transform: scale(1.09);
-      box-shadow: 0 0 28px rgba(255,100,0,0.6), 0 6px 20px rgba(0,0,0,0.6);
-      animation: none;
+    /* Cell text elements */
+    .stage-cell .cell-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.1rem; font-weight: 700; line-height: 1;
     }
+    .stage-cell.locked .cell-num { font-size: 0.85rem; }
+    .stage-cell .cell-type { font-size: 0.65rem; line-height: 1; }
+    .stage-cell .cell-stars { font-size: 0.5rem; line-height: 1; color: var(--gold); }
+    .stage-cell .cell-stars .dim { opacity: 0.2; }
 
-    .stage-cell .cell-num  { font-size: 0.88rem; font-weight: bold; line-height: 1; }
-    .stage-cell .cell-hard { font-size: 0.4rem; color: #ff5555; letter-spacing: 0.05em; margin-top: 1px; }
-    .stage-cell .cell-boss { font-size: 0.45rem; color: #ffb800; letter-spacing: 0.04em; margin-top: 1px; text-shadow: 0 0 6px rgba(255,184,0,0.7); }
-    .stage-cell .cell-stars { font-size: 0.52rem; line-height: 1; margin-top: 1px; }
-    .stage-cell.boss .cell-stars { color: #ffb800; }
+    /* Play arrow on next-play stage */
+    .stage-cell.next-play::after {
+      content: '▼';
+      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+      font-size: 0.7rem; color: var(--cell-color, var(--green));
+      animation: arrowBounce 0.8s ease-in-out infinite;
+    }
+    @keyframes arrowBounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(-4px); }
+    }
 
     /* Stage back button */
     .stage-back-btn {
-      font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
-      letter-spacing: 0.15em; padding: 5px 18px; margin-top: 2px;
-      border: 1px solid rgba(57,255,20,0.15); background: none;
-      color: #2a5a3a; cursor: pointer; border-radius: 10px;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.15em; padding: 6px 20px;
+      border: 1px solid rgba(57,255,20,0.2); background: rgba(57,255,20,0.04);
+      color: rgba(57,255,20,0.6); cursor: pointer; border-radius: 10px;
       transition: color 0.2s, border-color 0.2s, background 0.2s;
     }
-    .stage-back-btn:hover { color: #4aaa6a; border-color: rgba(57,255,20,0.35); background: rgba(57,255,20,0.04); }
+    .stage-back-btn:hover { color: #4aaa6a; border-color: rgba(57,255,20,0.4); background: rgba(57,255,20,0.08); }
 
     /* ── Stage HUD — pill chips ── */
     #stage-hud {
@@ -652,7 +703,12 @@
        SNAKE SELECT — COLLECTIBLE CARD DESIGN
     ════════════════════════════════════════════════════════ */
 
-    #snake-select-screen { gap: 10px; padding: 12px 14px; overflow-y: auto; }
+    #snake-select-screen {
+      position: fixed !important; inset: 0; z-index: 200;
+      background-color: #080d17;
+      overflow-y: auto; justify-content: center;
+      gap: 10px; padding: 16px 14px;
+    }
 
     .snake-select-title {
       font-family: 'Orbitron', monospace; font-size: 1.0rem;
@@ -768,8 +824,11 @@
       .main-btn.stage-btn { height: 46px; font-size: 0.8rem; }
       .main-btn.daily-btn { height: 38px; }
       .main-buttons { max-width: 210px; gap: 6px; }
-      #stage-grid { max-width: 295px; gap: 4px; }
-      .stage-cell { min-height: 46px; font-size: 0.6rem; }
+      .stage-cell { width: 58px; height: 58px; }
+      .stage-cell.next-play { width: 66px; height: 66px; }
+      .stage-cell.locked { width: 44px; height: 44px; }
+      .stage-cell .cell-num { font-size: 0.95rem; }
+      .cc-row { gap: 14px; }
       #snake-grid { max-width: 290px; }
       .snake-card { padding: 11px 8px 10px; }
       .snake-card .sn-icon { font-size: 1.5rem; }
@@ -864,9 +923,12 @@
 
     <!-- Stage Select screen -->
     <div class="overlay hidden" id="stage-select-screen">
-      <div class="stage-select-title">SELECT STAGE</div>
+      <div class="stage-select-header">
+        <button class="stage-back-btn" id="stage-back-btn">← BACK</button>
+        <div class="stage-select-title">SELECT STAGE</div>
+        <div style="width:60px"></div>
+      </div>
       <div id="stage-grid"></div>
-      <button class="stage-back-btn" id="stage-back-btn">← BACK</button>
     </div>
 
     <!-- Stage Win screen -->
@@ -1013,7 +1075,12 @@
 
   // ── Audio ───────────────────────────────────────────────────────────
   function ensureAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      try { audioCtx.resume(); } catch(e) {}
+    }
   }
 
   function playTone(freq, dur, type = 'square', vol = 0.13) {
@@ -2118,60 +2185,120 @@
     const grid = document.getElementById('stage-grid');
     grid.innerHTML = '';
 
-    // Find the first stage that's unlocked but not 3-starred (invite to play)
-    let nextPlayIdx = -1;
+    // Find the next stage to play (first unlocked, not yet 3-starred)
+    let nextPlayIdx = Math.min(unlocked, STAGES.length - 1);
     for (let i = 0; i <= unlocked && i < STAGES.length; i++) {
       if ((scores[i] || 0) < 3) { nextPlayIdx = i; break; }
     }
 
+    // World themes — one per 10 stages
+    const WORLD_THEMES = [
+      { accent:'#39ff14', bg:'rgba(0,40,0,0.35)',   name:'NOVICE'  },
+      { accent:'#00ccff', bg:'rgba(0,20,60,0.35)',   name:'WARRIOR' },
+      { accent:'#ff8800', bg:'rgba(40,14,0,0.35)',   name:'VETERAN' },
+      { accent:'#ff2a6d', bg:'rgba(50,0,20,0.35)',   name:'ELITE'   },
+      { accent:'#cc44ff', bg:'rgba(24,0,50,0.35)',   name:'MASTER'  },
+      { accent:'#00e5ff', bg:'rgba(0,30,40,0.35)',   name:'LEGEND'  },
+      { accent:'#ffd700', bg:'rgba(44,30,0,0.35)',   name:'TITAN'   },
+      { accent:'#ff5555', bg:'rgba(34,0,0,0.35)',    name:'PHANTOM' },
+      { accent:'#5577ff', bg:'rgba(0,0,44,0.35)',    name:'NEMESIS' },
+      { accent:'#ff44cc', bg:'rgba(40,0,40,0.35)',   name:'INFERNO' },
+    ];
+
+    const STAGES_PER_ROW = 3;
+    let lastChapter = -1;
+    let lastRow = -1;
+    let currentRowEl = null;
+
     for (let i = 0; i < STAGES.length; i++) {
-      // Chapter divider every 10 stages
-      if (i > 0 && i % 10 === 0) {
-        const chap = document.createElement('div');
-        chap.className = 'chapter-label';
-        const chapNum = Math.floor(i / 10) + 1;
-        const chapNames = ['','NOVICE','WARRIOR','VETERAN','ELITE','MASTER','LEGEND','TITAN','PHANTOM','NEMESIS','INFERNO'];
-        chap.textContent = `— CH.${chapNum} ${chapNames[chapNum] || 'VOID'} —`;
-        grid.appendChild(chap);
+      const chapterIdx = Math.floor(i / 10);
+      const posInChapter = i % 10;
+      const rowIdx = Math.floor(posInChapter / STAGES_PER_ROW);
+      const posInRow = posInChapter % STAGES_PER_ROW;
+      const theme = WORLD_THEMES[chapterIdx] || WORLD_THEMES[0];
+      const goingRight = rowIdx % 2 === 0;
+
+      // World header at start of chapter
+      if (chapterIdx !== lastChapter) {
+        const hdr = document.createElement('div');
+        hdr.className = 'cc-world-header';
+        hdr.style.color = theme.accent;
+        hdr.style.borderTopColor = theme.accent + '55';
+        hdr.style.textShadow = `0 0 10px ${theme.accent}88`;
+        hdr.style.background = theme.bg;
+        hdr.textContent = `— CH.${chapterIdx + 1}  ${theme.name} —`;
+        grid.appendChild(hdr);
+        lastChapter = chapterIdx;
+        lastRow = -1;
+        currentRowEl = null;
       }
 
-      const stageType = STAGES[i][6]; // false | 'hard' | 'boss'
+      // New row
+      if (rowIdx !== lastRow) {
+        // Connector between rows (except first row of chapter)
+        if (lastRow >= 0) {
+          const conn = document.createElement('div');
+          conn.className = 'cc-connector';
+          conn.style.background = theme.accent + '44';
+          grid.appendChild(conn);
+        }
+        currentRowEl = document.createElement('div');
+        currentRowEl.className = 'cc-row' + (goingRight ? '' : ' cc-row-reverse');
+        grid.appendChild(currentRowEl);
+        lastRow = rowIdx;
+      }
+
+      // Stage data
+      const stageType = STAGES[i][6];
       const isBoss = stageType === 'boss';
       const isHard = stageType === 'hard';
       const isLocked = i > unlocked;
       const stars = scores[i] || 0;
       const isNextPlay = i === nextPlayIdx;
 
+      // Build cell
       const cell = document.createElement('div');
       cell.className = 'stage-cell'
-        + (isLocked   ? ' locked'   : '')
-        + (isBoss     ? ' boss'     : isHard ? ' hard' : '')
-        + (isNextPlay ? ' next-play' : '');
+        + (isLocked    ? ' locked'    : '')
+        + (isBoss      ? ' boss'      : isHard ? ' hard' : '')
+        + (isNextPlay  ? ' next-play' : '');
 
-      const starsStr = isLocked
-        ? '<span style="font-size:0.65rem;opacity:0.3">🔒</span>'
-        : (stars
-            ? `<span style="color:${isBoss?'#ffb800':'var(--gold)'}">${'★'.repeat(stars)}</span><span style="opacity:0.2">${'★'.repeat(3-stars)}</span>`
-            : '<span style="opacity:0.18">★★★</span>');
+      // Apply color per world theme (unless boss/hard override)
+      if (!isBoss && !isHard && !isLocked) {
+        cell.style.setProperty('--cell-color', theme.accent);
+        cell.style.borderColor = theme.accent + 'cc';
+        cell.style.color = theme.accent;
+      }
 
-      const label = isBoss
-        ? '<div class="cell-boss">⚔ BOSS</div>'
-        : isHard ? '<div class="cell-hard">▲ HARD</div>' : '';
+      // Stars display
+      const starsHtml = isLocked
+        ? '<div class="cell-type">🔒</div>'
+        : stars
+          ? `<div class="cell-stars">${'★'.repeat(stars)}<span class="dim">${'★'.repeat(3-stars)}</span></div>`
+          : '<div class="cell-stars"><span class="dim">★★★</span></div>';
 
-      cell.innerHTML = `<div class="cell-num">${i+1}</div>${label}<div class="cell-stars">${starsStr}</div>`;
+      // Type label
+      const typeHtml = isLocked ? '' : isBoss
+        ? '<div class="cell-type">⚔</div>'
+        : isHard ? '<div class="cell-type">!</div>' : '';
+
+      cell.innerHTML = `<div class="cell-num">${i + 1}</div>${typeHtml}${starsHtml}`;
 
       if (!isLocked) {
-        cell.addEventListener('click', () => { ensureAudio(); startStage(i); });
+        cell.addEventListener('click', () => {
+          try { ensureAudio(); } catch(e) {}
+          startStage(i);
+        });
       }
-      grid.appendChild(cell);
+      currentRowEl.appendChild(cell);
     }
 
-    // Scroll to the first unlocked stage
+    // Scroll to the next-play stage
     setTimeout(() => {
-      const cells = grid.querySelectorAll('.stage-cell:not(.locked)');
-      const last = cells[cells.length - 1];
-      if (last) last.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 80);
+      const nextCell = grid.querySelector('.next-play');
+      const target = nextCell || grid.querySelector('.stage-cell:not(.locked):last-of-type');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 120);
   }
 
   // ── Monster Logic ──────────────────────────────────────────────────────
