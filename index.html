@@ -119,6 +119,17 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    #mute-btn {
+      background: none; border: 1px solid rgba(57,255,20,0.15);
+      color: rgba(57,255,20,0.55); font-size: 0.85rem;
+      width: 26px; height: 22px; border-radius: 6px; cursor: pointer;
+      padding: 0; display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+      line-height: 1;
+    }
+    #mute-btn:hover { border-color: rgba(57,255,20,0.4); color: var(--green); }
+    #mute-btn.muted { color: #445; border-color: rgba(60,60,80,0.3); }
+
     #daily-banner {
       display: none;
       font-size: 0.68rem; letter-spacing: 0.18em;
@@ -391,10 +402,15 @@
     /* STORE */
     .main-btn.store-btn {
       height: 32px;
-      background: rgba(15,20,32,0.6);
-      border-color: rgba(60,70,100,0.3);
-      color: #3a4060; cursor: not-allowed; opacity: 0.5;
+      background: rgba(40,30,5,0.4);
+      border-color: rgba(255,215,0,0.3);
+      color: rgba(255,215,0,0.65);
       font-size: 0.6rem; letter-spacing: 0.12em;
+    }
+    .main-btn.store-btn:hover {
+      background: rgba(255,215,0,0.08);
+      border-color: rgba(255,215,0,0.55);
+      color: var(--gold);
     }
 
     /* ── Legacy start/daily buttons (kept for any JS ref) ── */
@@ -650,6 +666,23 @@
       animation: timerUrgent 0.45s ease-in-out infinite;
     }
     #stage-hud .hud-timer.urgent span { color: #ff5555; text-shadow: 0 0 10px #ff3333; }
+    #stage-hud .hud-coins { color: rgba(255,215,0,0.75); border-color: rgba(255,215,0,0.2); background: rgba(30,20,5,0.8); }
+    #stage-hud .hud-coins span { color: #ffe580; font-size: 0.9rem; }
+    .go-btn.continue-coins {
+      margin-top: 4px;
+      background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.65); color: var(--gold);
+      box-shadow: 0 0 12px rgba(255,215,0,0.22), 0 3px 14px rgba(0,0,0,0.4);
+      font-size: 0.68rem; letter-spacing: 0.1em; padding: 8px 20px;
+    }
+    .go-btn.continue-coins:hover { background: rgba(255,215,0,0.2); box-shadow: 0 0 24px rgba(255,215,0,0.4); }
+    .coin-reward {
+      font-size: 0.78rem; color: var(--gold);
+      text-shadow: 0 0 10px rgba(255,215,0,0.6);
+      letter-spacing: 0.1em;
+      border: 1px solid rgba(255,215,0,0.3);
+      padding: 3px 14px; border-radius: 10px;
+      background: rgba(255,215,0,0.05);
+    }
 
     @keyframes timerUrgent {
       0%,100% { opacity:1; box-shadow: 0 0 8px rgba(255,50,50,0.3); }
@@ -917,6 +950,7 @@
     <div class="score-item"><span id="hs-label">BEST:</span> <span id="high-score-display">0</span></div>
     <div class="score-item">LEVEL: <span id="level-display">1</span></div>
     <span id="combo-display"></span>
+    <button id="mute-btn" title="Toggle sound">🔊</button>
   </div>
 
   <div id="daily-banner">📅 DAILY CHALLENGE</div>
@@ -924,6 +958,7 @@
     <div class="hud-item">STAGE: <span id="hud-stage">1</span></div>
     <div class="hud-item hud-timer" id="hud-timer-wrap">TIME: <span id="hud-time">60</span>s</div>
     <div class="hud-item">FOOD: <span id="hud-food">0</span>/<span id="hud-food-total">0</span></div>
+    <div class="hud-item hud-coins">🪙 <span id="hud-coins">0</span></div>
     <button id="power-btn" class="classic-pwr">⚡ POWER</button>
   </div>
   <div id="effect-bar"></div>
@@ -983,7 +1018,34 @@
         <button class="main-btn stage-btn" id="stage-menu-btn">▶ STAGE</button>
         <button class="main-btn daily-btn" id="daily-menu-btn">📅 DAILY</button>
         <button class="main-btn" id="snake-menu-btn" style="background:rgba(57,255,20,0.05);border-color:rgba(57,255,20,0.4);color:#7dff60;">🐍 CHOOSE SNAKE</button>
-        <button class="main-btn store-btn" id="store-menu-btn" title="Coming Soon">🏪 STORE 🔒</button>
+        <button class="main-btn store-btn" id="store-menu-btn">🏪 STORE</button>
+        <button class="main-btn" id="install-menu-btn" style="background:rgba(0,229,255,0.07);border-color:rgba(0,229,255,0.5);color:#00e5ff;font-size:0.72rem;">📲 INSTALL APP</button>
+      </div>
+
+      <!-- Install modal -->
+      <div class="overlay hidden" id="install-screen" style="z-index:200;background:rgba(6,8,15,0.97);padding:24px 18px;overflow-y:auto;text-align:left;">
+        <h2 style="font-family:'Orbitron',monospace;color:#00e5ff;text-align:center;margin-bottom:16px;font-size:1.1rem;letter-spacing:0.2em;">📲 INSTALL APP</h2>
+        <div id="install-android" style="margin-bottom:20px;padding:14px;border:1px solid rgba(57,255,20,0.3);border-radius:10px;background:rgba(0,40,0,0.3);">
+          <div style="color:#39ff14;font-size:0.85rem;font-weight:bold;margin-bottom:8px;">🤖 Android</div>
+          <div style="color:rgba(57,255,20,0.8);font-size:0.78rem;line-height:1.7;">
+            1. Download the APK file<br>
+            2. Open the downloaded file<br>
+            3. Allow install from unknown sources<br>
+            4. Tap Install — done!
+          </div>
+          <a id="apk-download-btn" href="#" target="_blank" style="display:block;margin-top:12px;padding:10px;background:#39ff14;color:#000;text-align:center;border-radius:8px;font-weight:bold;font-size:0.82rem;text-decoration:none;">⬇ Download APK</a>
+        </div>
+        <div id="install-ios" style="margin-bottom:20px;padding:14px;border:1px solid rgba(0,229,255,0.3);border-radius:10px;background:rgba(0,20,40,0.3);">
+          <div style="color:#00e5ff;font-size:0.85rem;font-weight:bold;margin-bottom:8px;">🍎 iPhone / iPad</div>
+          <div style="color:rgba(0,229,255,0.8);font-size:0.78rem;line-height:1.7;">
+            1. Open this page in <strong>Safari</strong><br>
+            2. Tap the <strong>Share</strong> button (□↑)<br>
+            3. Tap <strong>"Add to Home Screen"</strong><br>
+            4. Opens as a full-screen app!
+          </div>
+          <button id="ios-install-pwa" style="display:block;width:100%;margin-top:12px;padding:10px;background:#00e5ff;color:#000;border:none;border-radius:8px;font-weight:bold;font-size:0.82rem;cursor:pointer;">✓ I'm ready — Go to game</button>
+        </div>
+        <button class="go-btn" id="install-back-btn" style="width:100%;margin-top:4px;">← BACK</button>
       </div>
     </div>
 
@@ -1009,6 +1071,7 @@
       <h2 id="stagewin-title">STAGE CLEAR!</h2>
       <div class="stagewin-stars" id="stagewin-stars">★★★</div>
       <div class="stagewin-label" id="stagewin-label">SCORE: 0</div>
+      <div class="coin-reward" id="stagewin-coins">🪙 +5 COINS</div>
       <div class="stagewin-buttons">
         <button class="sw-btn retry-stage" id="sw-retry-btn">↺ RETRY</button>
         <button class="sw-btn next" id="sw-next-btn">▶ NEXT</button>
@@ -1027,6 +1090,7 @@
         <button class="go-btn retry" id="retry-btn">▶ RETRY</button>
         <button class="go-btn daily" id="daily-go-btn">📅 DAILY</button>
       </div>
+      <button class="go-btn continue-coins hidden" id="continue-coins-btn">🪙×20 CONTINUE</button>
     </div>
   </div>
 
@@ -1145,12 +1209,38 @@
   let stormCooldown = 0, stormStunExpires = 0;
   // Background music
   let bgMusicInterval = null, bgNoteIdx = 0;
+  // Mute
+  let isMuted = localStorage.getItem('snakeMuted') === '1';
+  // Coins
+  let coins = parseInt(localStorage.getItem('snakeCoins') || '0', 10);
   // Double-tap tracking
   let _lastTap = 0;
   // Loop
   let foodPulse = 0, bonusPulse = 0;
   let intervalId = null, animFrame, effectBarFrame;
   let gameState = 'idle';
+
+  // ── Cached constants (module-level, not recreated per frame) ──────────
+  const SNAKE_COLORS = {
+    classic: { r:57,  g:255, b:20,  glow:'#39ff14' },
+    frost:   { r:0,   g:200, b:255, glow:'#00ccff' },
+    flip:    { r:255, g:140, b:0,   glow:'#ff8800' },
+    fire:    { r:255, g:55,  b:20,  glow:'#ff3311' },
+    shadow:  { r:153, g:51,  b:255, glow:'#9933ff' },
+    thunder: { r:255, g:221, b:0,   glow:'#ffdd00' },
+    magnet:  { r:0,   g:255, b:204, glow:'#00ffcc' },
+    venom:   { r:170, g:255, b:0,   glow:'#aaff00' },
+    storm:   { r:136, g:170, b:255, glow:'#88aaff' },
+  };
+  // Background gradient cached once (canvas size never changes)
+  let _bgGrad = null;
+  function getBgGrad() {
+    if (_bgGrad) return _bgGrad;
+    _bgGrad = ctx.createRadialGradient(canvas.width/2,canvas.height/2,0,canvas.width/2,canvas.height/2,canvas.width*0.7);
+    _bgGrad.addColorStop(0, 'rgba(20,50,35,0.18)');
+    _bgGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    return _bgGrad;
+  }
   let audioCtx = null;
 
   highScore = parseInt(localStorage.getItem('snakeHighScore') || '0', 10);
@@ -1169,7 +1259,7 @@
   }
 
   function playTone(freq, dur, type = 'square', vol = 0.13) {
-    if (!audioCtx) return;
+    if (!audioCtx || isMuted) return;
     const o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.connect(g); g.connect(audioCtx.destination);
     o.type = type;
@@ -1247,7 +1337,7 @@
   const BG_STEP_MS = 200;
 
   function startBgMusic() {
-    if (bgMusicInterval || !audioCtx) return;
+    if (bgMusicInterval || !audioCtx || isMuted) return;
     bgNoteIdx = 0;
     bgMusicInterval = setInterval(() => {
       if (!audioCtx) return;
@@ -1547,13 +1637,14 @@
       }
     }
 
-    if (!bonusFruit && now >= nextBonusTime) spawnBonus();
-
-    // Golden food timer
-    if (!goldenFood && now >= nextGoldenTime) {
-      goldenFood = { ...randFreePos(), expiresAt: now + GOLDEN_TTL };
+    // Bonus fruits & golden food only in DAILY / free-play mode
+    if (!isStageMode) {
+      if (!bonusFruit && now >= nextBonusTime) spawnBonus();
+      if (!goldenFood && now >= nextGoldenTime) {
+        goldenFood = { ...randFreePos(), expiresAt: now + GOLDEN_TTL };
+      }
+      if (goldenFood && now > goldenFood.expiresAt) goldenFood = null;
     }
-    if (goldenFood && now > goldenFood.expiresAt) goldenFood = null;
 
     if (!isStageMode && level >= 3 && lastObsMoveTime > 0 && now - lastObsMoveTime >= OBS_MOVE_INTERVAL) {
       lastObsMoveTime = now;
@@ -1737,67 +1828,58 @@
 
     const t = Date.now() / 1000;
 
-    // Background — dark floor with subtle radial glow
+    // Background — dark floor with subtle radial glow (gradient cached)
     ctx.fillStyle = '#07111f';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // Center glow
-    const bgGrad = ctx.createRadialGradient(canvas.width/2,canvas.height/2,0,canvas.width/2,canvas.height/2,canvas.width*0.7);
-    bgGrad.addColorStop(0, 'rgba(20,50,35,0.18)');
-    bgGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = bgGrad;
+    ctx.fillStyle = getBgGrad();
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // Perspective grid — lines slightly converge toward canvas center
+    // Perspective grid — batch all lines into one path (42 → 1 stroke call)
     const vanX = canvas.width/2, vanY = canvas.height/2;
+    ctx.strokeStyle = 'rgba(57,255,20,0.028)';
     ctx.lineWidth = 0.5;
+    ctx.beginPath();
     for (let i = 0; i <= COLS; i++) {
       const bx = i*CELL;
       const lean = (bx - vanX) * 0.018;
-      const brightness = Math.max(0.015, 0.04 - Math.abs(bx-vanX)/canvas.width*0.03);
-      ctx.strokeStyle = `rgba(57,255,20,${brightness})`;
-      ctx.beginPath(); ctx.moveTo(bx - lean, 0); ctx.lineTo(bx + lean, canvas.height); ctx.stroke();
+      ctx.moveTo(bx - lean, 0); ctx.lineTo(bx + lean, canvas.height);
     }
     for (let j = 0; j <= ROWS; j++) {
       const by = j*CELL;
       const lean = (by - vanY) * 0.018;
-      const brightness = Math.max(0.015, 0.04 - Math.abs(by-vanY)/canvas.height*0.03);
-      ctx.strokeStyle = `rgba(57,255,20,${brightness})`;
-      ctx.beginPath(); ctx.moveTo(0, by - lean); ctx.lineTo(canvas.width, by + lean); ctx.stroke();
+      ctx.moveTo(0, by - lean); ctx.lineTo(canvas.width, by + lean);
     }
+    ctx.stroke();
 
-    // 3D Obstacles — dark stone blocks with bevel
-    obstacles.forEach(o => {
-      const ox = o.x*CELL, oy = o.y*CELL;
-      ctx.save();
-      // Base dark stone
-      ctx.shadowColor = 'rgba(255,100,30,0.25)'; ctx.shadowBlur = 8;
-      ctx.fillStyle = '#141820';
-      roundRect(ctx, ox+1, oy+1, CELL-2, CELL-2, 3);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      // Top bevel (lighter)
-      ctx.fillStyle = 'rgba(80,90,110,0.45)';
-      ctx.fillRect(ox+2, oy+2, CELL-4, 3);
-      // Left bevel
-      ctx.fillStyle = 'rgba(80,90,110,0.3)';
-      ctx.fillRect(ox+2, oy+2, 3, CELL-4);
-      // Bottom shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      ctx.fillRect(ox+2, oy+CELL-5, CELL-4, 3);
-      // Right shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.35)';
-      ctx.fillRect(ox+CELL-5, oy+2, 3, CELL-4);
-      // Stone texture dots
-      ctx.fillStyle = 'rgba(50,55,65,0.7)';
-      [[0.28,0.32],[0.62,0.52],[0.38,0.7],[0.7,0.28]].forEach(([dx,dy]) => {
-        ctx.beginPath(); ctx.arc(ox+CELL*dx, oy+CELL*dy, 1.2, 0, Math.PI*2); ctx.fill();
+    // 3D Obstacles — amber/orange stone blocks (no per-obstacle shadow — batched)
+    if (obstacles.length > 0) {
+      // Draw all obstacle bases in one pass (no shadow)
+      ctx.fillStyle = '#5c2800';
+      obstacles.forEach(o => {
+        roundRect(ctx, o.x*CELL+2, o.y*CELL+2, CELL-4, CELL-4, 2);
+        ctx.fill();
       });
-      // Orange edge glow
-      ctx.strokeStyle = 'rgba(255,110,30,0.18)'; ctx.lineWidth = 1;
-      roundRect(ctx, ox+1, oy+1, CELL-2, CELL-2, 3);
-      ctx.stroke();
-      ctx.restore();
-    });
+      // Top bevel (all at once)
+      ctx.fillStyle = 'rgba(255,160,60,0.55)';
+      obstacles.forEach(o => { ctx.fillRect(o.x*CELL+2, o.y*CELL+2, CELL-4, 3); });
+      // Left bevel
+      ctx.fillStyle = 'rgba(255,140,40,0.35)';
+      obstacles.forEach(o => { ctx.fillRect(o.x*CELL+2, o.y*CELL+2, 3, CELL-4); });
+      // Bottom shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      obstacles.forEach(o => { ctx.fillRect(o.x*CELL+2, o.y*CELL+CELL-5, CELL-4, 3); });
+      // Right shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      obstacles.forEach(o => { ctx.fillRect(o.x*CELL+CELL-5, o.y*CELL+2, 3, CELL-4); });
+      // Glowing edges — single shadow set, batch all stroke paths
+      ctx.shadowColor = 'rgba(255,160,30,0.6)'; ctx.shadowBlur = 8;
+      ctx.strokeStyle = 'rgba(255,150,40,0.7)'; ctx.lineWidth = 1.5;
+      obstacles.forEach(o => {
+        roundRect(ctx, o.x*CELL+1, o.y*CELL+1, CELL-2, CELL-2, 3);
+        ctx.stroke();
+      });
+      ctx.shadowBlur = 0;
+    }
 
     // Venom cells (toxic puddles)
     if (venomCells.length > 0) {
@@ -1933,80 +2015,75 @@
 
     // Snake
     const ghostMode = bonusEffect?.type === 'ghost';
-    const SNAKE_COLORS = {
-      classic: { r:57,  g:255, b:20,  glow:'#39ff14' },
-      frost:   { r:0,   g:200, b:255, glow:'#00ccff' },
-      flip:    { r:255, g:140, b:0,   glow:'#ff8800' },
-      fire:    { r:255, g:55,  b:20,  glow:'#ff3311' },
-      shadow:  { r:153, g:51,  b:255, glow:'#9933ff' },
-      thunder: { r:255, g:221, b:0,   glow:'#ffdd00' },
-      magnet:  { r:0,   g:255, b:204, glow:'#00ffcc' },
-      venom:   { r:170, g:255, b:0,   glow:'#aaff00' },
-      storm:   { r:136, g:170, b:255, glow:'#88aaff' },
-    };
     const sc = SNAKE_COLORS[selectedSnake] || SNAKE_COLORS.classic;
-    // Frost frozen glow overlay on monsters
+    // Frost frozen glow overlay
     if (frostActive && isStageMode) {
-      ctx.save();
       ctx.fillStyle = 'rgba(0,180,255,0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.restore();
     }
+
+    // ── Draw body segments first (no shadow, 1 gradient pass — fast) ──
     snake.forEach((seg, i) => {
-      const isHead = i === 0;
-      const brightness = isHead ? 1 : Math.max(0.38, 1 - i * 0.028);
-      const pad = isHead ? 1 : 2;
-      const sx = seg.x*CELL+pad, sy = seg.y*CELL+pad;
-      const sw = CELL-pad*2, sh = CELL-pad*2;
-      const rr = isHead ? 4 : 3;
+      if (i === 0) return; // head drawn last
+      const brightness = Math.max(0.38, 1 - i * 0.028);
+      const sx = seg.x*CELL+2, sy = seg.y*CELL+2;
+      const sw = CELL-4, sh = CELL-4;
+      // Base color (no shadow)
+      if (ghostMode) {
+        ctx.globalAlpha = Math.max(0.12, brightness * 0.45);
+        ctx.fillStyle = `rgba(130,40,210,${brightness})`;
+      } else {
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = `rgb(${Math.round(sc.r*brightness)},${Math.round(sc.g*brightness)},${Math.round(sc.b*brightness)})`;
+      }
+      roundRect(ctx, sx, sy, sw, sh, 3); ctx.fill();
+      // Single diagonal highlight (top-left → bottom-right) — 1 gradient instead of 3
+      const hl = ctx.createLinearGradient(sx, sy, sx+sw, sy+sh);
+      hl.addColorStop(0, 'rgba(255,255,255,0.18)');
+      hl.addColorStop(0.45, 'rgba(255,255,255,0.03)');
+      hl.addColorStop(1, 'rgba(0,0,0,0.32)');
+      ctx.fillStyle = hl;
+      ctx.globalAlpha = 1;
+      roundRect(ctx, sx, sy, sw, sh, 3); ctx.fill();
+    });
+
+    // ── Draw head with full 3D effect + shadow ──
+    if (snake.length > 0) {
+      const seg = snake[0];
+      const sx = seg.x*CELL+1, sy = seg.y*CELL+1;
+      const sw = CELL-2, sh = CELL-2;
       ctx.save();
       if (ghostMode) {
-        ctx.globalAlpha = isHead ? 0.82 : Math.max(0.15, brightness * 0.5);
-        ctx.shadowColor = '#bf5fff'; ctx.shadowBlur = isHead ? 20 : 10;
+        ctx.globalAlpha = 0.82;
+        ctx.shadowColor = '#bf5fff'; ctx.shadowBlur = 20;
         const gr = ctx.createLinearGradient(sx, sy, sx+sw, sy+sh);
-        gr.addColorStop(0, `rgba(180,80,255,${brightness})`);
-        gr.addColorStop(1, `rgba(80,0,150,${brightness})`);
+        gr.addColorStop(0, 'rgba(180,80,255,1)');
+        gr.addColorStop(1, 'rgba(80,0,150,1)');
         ctx.fillStyle = gr;
       } else {
-        ctx.shadowColor = sc.glow; ctx.shadowBlur = isHead ? 16 : 8;
-        const r = Math.round(sc.r*brightness), g = Math.round(sc.g*brightness), b = Math.round(sc.b*brightness);
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.shadowColor = sc.glow; ctx.shadowBlur = 16;
+        ctx.fillStyle = `rgb(${sc.r},${sc.g},${sc.b})`;
       }
-      // Base block
-      roundRect(ctx, sx, sy, sw, sh, rr); ctx.fill();
-
-      // 3D top-highlight gradient
+      roundRect(ctx, sx, sy, sw, sh, 4); ctx.fill();
       ctx.shadowBlur = 0;
-      const hl = ctx.createLinearGradient(sx, sy, sx, sy+sh*0.55);
-      hl.addColorStop(0, 'rgba(255,255,255,0.22)');
-      hl.addColorStop(1, 'rgba(255,255,255,0)');
+      // 3D highlight on head
+      const hl = ctx.createLinearGradient(sx, sy, sx+sw, sy+sh);
+      hl.addColorStop(0, 'rgba(255,255,255,0.28)');
+      hl.addColorStop(0.4, 'rgba(255,255,255,0.06)');
+      hl.addColorStop(1, 'rgba(0,0,0,0.42)');
       ctx.fillStyle = hl;
-      roundRect(ctx, sx, sy, sw, sh, rr); ctx.fill();
-
-      // 3D left-highlight
-      const ll = ctx.createLinearGradient(sx, sy, sx+sw*0.4, sy);
-      ll.addColorStop(0, 'rgba(255,255,255,0.1)');
-      ll.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = ll;
-      roundRect(ctx, sx, sy, sw, sh, rr); ctx.fill();
-
-      // 3D bottom-right shadow
-      const sl = ctx.createLinearGradient(sx+sw*0.45, sy+sh*0.45, sx+sw, sy+sh);
-      sl.addColorStop(0, 'rgba(0,0,0,0)');
-      sl.addColorStop(1, 'rgba(0,0,0,0.38)');
-      ctx.fillStyle = sl;
-      roundRect(ctx, sx, sy, sw, sh, rr); ctx.fill();
-
-      // Flip shield indicator: glowing ring
-      if (isHead && selectedSnake === 'flip' && flipShield > 0) {
+      ctx.globalAlpha = 1;
+      roundRect(ctx, sx, sy, sw, sh, 4); ctx.fill();
+      // Flip shield
+      if (selectedSnake === 'flip' && flipShield > 0) {
         ctx.shadowColor = '#ff8800'; ctx.shadowBlur = 20;
         ctx.strokeStyle = 'rgba(255,140,0,0.65)'; ctx.lineWidth = 2;
         roundRect(ctx, seg.x*CELL-2, seg.y*CELL-2, CELL+4, CELL+4, 6);
         ctx.stroke();
       }
       ctx.restore();
-      if (isHead) drawEyes(seg);
-    });
+      drawEyes(seg);
+    }
 
     // Fireball
     if (fireball) {
@@ -2139,12 +2216,11 @@
       // Let buttons handle their own taps
       const el = document.elementFromPoint(t.clientX, t.clientY);
       if (el && (el.tagName === 'BUTTON' || el.closest('button'))) return;
-      // Double-tap on canvas area activates power
+      // Single-tap on canvas area activates power
       const now = Date.now();
       const wrapper2 = document.getElementById('canvas-wrapper');
       const onCanvas = el && (el === canvas || el === wrapper2 || (wrapper2 && wrapper2.contains(el)));
-      if (onCanvas && gameState === 'playing' && now - _lastTap < 320) {
-        _lastTap = 0;
+      if (onCanvas && gameState === 'playing') {
         activatePower();
         return;
       }
@@ -2210,121 +2286,116 @@
   // Stage tuple: [foodsToWin, timeSec, speedIdx, mapType, obsCount, monsters[], stageType]
   // stageType: false='normal', 'hard'=hard stage, 'boss'=boss stage (every 10th)
   const STAGES = [
-    // 1-5: Very easy, open maps, no monsters
-    [5,  90, 0, 'open',     0, [],                    false],
-    [6,  90, 0, 'open',     0, [],                    false],
-    [6,  85, 0, 'open',     2, [],                    false],
-    [7,  85, 0, 'open',     2, [],                    false],
-    [7,  80, 1, 'open',     3, [],                    false],
-    // 6-10
-    [8,  80, 1, 'cross',    3, [],                    false],
-    [8,  78, 1, 'cross',    4, [],                    false],
-    [9,  75, 1, 'cross',    4, [],                    false],
-    [9,  75, 1, 'islands',  4, [],                    'hard'],
-    [12, 65, 2, 'islands',  5, [{type:'roam',count:2},{type:'chase',count:1}], 'boss'],
-    // 11-15
-    [9,  75, 2, 'islands',  4, [{type:'roam',count:1}], false],
-    [10, 72, 2, 'islands',  5, [{type:'roam',count:1}], false],
-    [10, 70, 2, 'ring',     5, [{type:'roam',count:1}], false],
-    [11, 68, 2, 'ring',     6, [{type:'roam',count:1}], 'hard'],
-    [12, 65, 2, 'ring',     6, [{type:'roam',count:2}], false],
-    // 16-20
-    [11, 68, 2, 'cross',    6, [{type:'roam',count:1},{type:'chase',count:1}], false],
-    [12, 65, 2, 'cross',    7, [{type:'roam',count:1},{type:'chase',count:1}], false],
-    [12, 65, 3, 'islands',  6, [{type:'chase',count:2}],                      'hard'],
-    [13, 62, 3, 'islands',  7, [{type:'chase',count:2}],                      false],
-    [16, 55, 3, 'maze',     6, [{type:'chase',count:3},{type:'roam',count:2},{type:'patrol',count:1}], 'boss'],
-    // 21-25
-    [13, 63, 3, 'maze',     5, [{type:'chase',count:2},{type:'roam',count:1}], false],
-    [14, 60, 3, 'maze',     6, [{type:'chase',count:2},{type:'roam',count:1}], false],
-    [14, 60, 3, 'ring',     7, [{type:'chase',count:3}],                       false],
-    [15, 58, 3, 'ring',     7, [{type:'chase',count:2},{type:'patrol',count:1}], 'hard'],
-    [15, 55, 3, 'maze',     8, [{type:'chase',count:3},{type:'patrol',count:1}], false],
-    // 26-30
-    [15, 58, 3, 'cross',    8, [{type:'chase',count:2},{type:'patrol',count:2}], false],
-    [15, 55, 4, 'cross',    8, [{type:'chase',count:3},{type:'patrol',count:1}], false],
-    [16, 55, 4, 'corridor', 4, [{type:'patrol',count:2},{type:'chase',count:2}], 'hard'],
-    [16, 52, 4, 'corridor', 4, [{type:'patrol',count:2},{type:'chase',count:2}], false],
-    [18, 45, 4, 'maze',     8, [{type:'chase',count:4},{type:'patrol',count:3},{type:'roam',count:1}], 'boss'],
-    // 31-35
-    [16, 55, 4, 'corridor', 5, [{type:'chase',count:3},{type:'patrol',count:2}], false],
-    [17, 52, 4, 'corridor', 5, [{type:'chase',count:4},{type:'patrol',count:1}], false],
-    [17, 50, 4, 'islands',  8, [{type:'chase',count:3},{type:'patrol',count:2}], 'hard'],
-    [18, 50, 4, 'maze',     7, [{type:'chase',count:4},{type:'roam',count:1}],   false],
-    [18, 48, 4, 'ring',     8, [{type:'chase',count:4},{type:'patrol',count:2}], false],
-    // 36-40
-    [17, 52, 4, 'islands',  9, [{type:'chase',count:4},{type:'patrol',count:2}], false],
-    [18, 50, 5, 'islands',  9, [{type:'chase',count:4},{type:'patrol',count:2}], false],
-    [18, 48, 5, 'maze',     8, [{type:'chase',count:5},{type:'patrol',count:2}], 'hard'],
-    [19, 46, 5, 'ring',     9, [{type:'chase',count:5},{type:'patrol',count:2}], false],
-    [20, 40, 5, 'corridor', 6, [{type:'chase',count:6},{type:'patrol',count:4},{type:'roam',count:2}], 'boss'],
-    // 41-45
-    [19, 48, 5, 'maze',     7, [{type:'chase',count:5},{type:'patrol',count:3}], false],
-    [20, 46, 5, 'maze',     8, [{type:'chase',count:5},{type:'patrol',count:3}], false],
-    [20, 44, 5, 'cross',   10, [{type:'chase',count:6},{type:'patrol',count:2}], 'hard'],
-    [20, 42, 5, 'ring',    10, [{type:'chase',count:6},{type:'patrol',count:3}], false],
-    [20, 40, 5, 'corridor', 5, [{type:'chase',count:7},{type:'patrol',count:3}], false],
-    // 46-50: NIGHTMARE
-    [20, 42, 5, 'maze',    10, [{type:'chase',count:6},{type:'patrol',count:4}], false],
-    [20, 40, 5, 'islands', 10, [{type:'chase',count:7},{type:'patrol',count:3}], 'hard'],
-    [20, 38, 5, 'cross',   10, [{type:'chase',count:7},{type:'patrol',count:4}], false],
-    [20, 36, 5, 'ring',    10, [{type:'chase',count:8},{type:'patrol',count:4}], false],
-    [20, 32, 5, 'maze',    10, [{type:'chase',count:9},{type:'patrol',count:5},{type:'roam',count:2}], 'boss'],
-    // ── CHAPTER 2: STAGES 51-60 ──────────────────────────────────────────
-    [20, 38, 5, 'cross',   10, [{type:'chase',count:8},{type:'patrol',count:4}], false],
-    [20, 36, 5, 'islands', 10, [{type:'chase',count:8},{type:'patrol',count:4}], false],
-    [20, 36, 5, 'ring',    10, [{type:'chase',count:9},{type:'patrol',count:3}], false],
-    [20, 34, 5, 'maze',    10, [{type:'chase',count:9},{type:'patrol',count:4}], 'hard'],
-    [20, 34, 5, 'corridor', 6, [{type:'chase',count:9},{type:'patrol',count:4}], false],
-    [20, 33, 5, 'cross',   10, [{type:'chase',count:9},{type:'patrol',count:5}], false],
-    [20, 32, 5, 'islands', 10, [{type:'chase',count:9},{type:'patrol',count:5}], false],
-    [20, 32, 5, 'ring',    10, [{type:'chase',count:10},{type:'patrol',count:4}], false],
-    [20, 30, 5, 'maze',    10, [{type:'chase',count:10},{type:'patrol',count:5}], 'hard'],
-    [22, 28, 5, 'maze',    10, [{type:'chase',count:10},{type:'patrol',count:6},{type:'roam',count:2}], 'boss'],
-    // ── STAGES 61-70 ──────────────────────────────────────────────────────
-    [20, 35, 5, 'corridor', 6, [{type:'chase',count:10},{type:'patrol',count:5}], false],
-    [20, 34, 5, 'cross',   10, [{type:'chase',count:10},{type:'patrol',count:5}], false],
-    [20, 33, 5, 'islands', 10, [{type:'chase',count:10},{type:'patrol',count:6}], false],
-    [20, 32, 5, 'ring',    10, [{type:'chase',count:11},{type:'patrol',count:5}], 'hard'],
-    [20, 31, 5, 'maze',    10, [{type:'chase',count:11},{type:'patrol',count:5}], false],
-    [20, 30, 5, 'corridor', 6, [{type:'chase',count:11},{type:'patrol',count:6}], false],
-    [20, 30, 5, 'cross',   10, [{type:'chase',count:11},{type:'patrol',count:6}], false],
-    [20, 28, 5, 'islands', 10, [{type:'chase',count:12},{type:'patrol',count:5}], 'hard'],
-    [20, 27, 5, 'ring',    10, [{type:'chase',count:12},{type:'patrol',count:6}], false],
-    [24, 25, 5, 'maze',    10, [{type:'chase',count:12},{type:'patrol',count:7},{type:'roam',count:3}], 'boss'],
-    // ── STAGES 71-80 ──────────────────────────────────────────────────────
-    [20, 32, 5, 'corridor', 6, [{type:'chase',count:12},{type:'patrol',count:6}], false],
-    [20, 31, 5, 'cross',   10, [{type:'chase',count:12},{type:'patrol',count:7}], false],
-    [20, 30, 5, 'islands', 10, [{type:'chase',count:13},{type:'patrol',count:6}], false],
-    [20, 29, 5, 'ring',    10, [{type:'chase',count:13},{type:'patrol',count:7}], 'hard'],
-    [20, 28, 5, 'maze',    10, [{type:'chase',count:13},{type:'patrol',count:7}], false],
-    [20, 27, 5, 'corridor', 6, [{type:'chase',count:14},{type:'patrol',count:6}], false],
-    [20, 26, 5, 'cross',   10, [{type:'chase',count:14},{type:'patrol',count:7}], false],
-    [20, 25, 5, 'islands', 10, [{type:'chase',count:14},{type:'patrol',count:8}], 'hard'],
-    [20, 24, 5, 'ring',    10, [{type:'chase',count:15},{type:'patrol',count:7}], false],
-    [25, 22, 5, 'maze',    10, [{type:'chase',count:15},{type:'patrol',count:8},{type:'roam',count:3}], 'boss'],
-    // ── STAGES 81-90 ──────────────────────────────────────────────────────
-    [20, 28, 5, 'corridor', 6, [{type:'chase',count:14},{type:'patrol',count:8}], false],
-    [20, 27, 5, 'cross',   10, [{type:'chase',count:15},{type:'patrol',count:8}], false],
-    [20, 26, 5, 'islands', 10, [{type:'chase',count:15},{type:'patrol',count:9}], false],
-    [20, 25, 5, 'ring',    10, [{type:'chase',count:16},{type:'patrol',count:8}], 'hard'],
-    [20, 24, 5, 'maze',    10, [{type:'chase',count:16},{type:'patrol',count:8}], false],
-    [20, 23, 5, 'corridor', 6, [{type:'chase',count:16},{type:'patrol',count:9}], false],
-    [20, 22, 5, 'cross',   10, [{type:'chase',count:17},{type:'patrol',count:8}], false],
-    [20, 21, 5, 'islands', 10, [{type:'chase',count:17},{type:'patrol',count:9}], 'hard'],
-    [20, 20, 5, 'ring',    10, [{type:'chase',count:18},{type:'patrol',count:9}], false],
-    [25, 20, 5, 'maze',    10, [{type:'chase',count:18},{type:'patrol',count:10},{type:'roam',count:4}], 'boss'],
-    // ── STAGES 91-100: FINAL CHAPTER ──────────────────────────────────────
-    [20, 25, 5, 'corridor', 6, [{type:'chase',count:17},{type:'patrol',count:10}], false],
-    [20, 24, 5, 'cross',   10, [{type:'chase',count:18},{type:'patrol',count:10}], false],
-    [20, 23, 5, 'islands', 10, [{type:'chase',count:18},{type:'patrol',count:11}], false],
-    [20, 22, 5, 'ring',    10, [{type:'chase',count:19},{type:'patrol',count:10}], 'hard'],
-    [20, 21, 5, 'maze',    10, [{type:'chase',count:19},{type:'patrol',count:11}], false],
-    [20, 20, 5, 'corridor', 6, [{type:'chase',count:20},{type:'patrol',count:10}], false],
-    [20, 19, 5, 'cross',   10, [{type:'chase',count:20},{type:'patrol',count:11}], false],
-    [20, 18, 5, 'islands', 10, [{type:'chase',count:20},{type:'patrol',count:12}], 'hard'],
-    [20, 17, 5, 'ring',    10, [{type:'chase',count:20},{type:'patrol',count:12}], false],
-    [30, 15, 5, 'maze',    10, [{type:'chase',count:20},{type:'patrol',count:15},{type:'roam',count:5}], 'boss'],
+    // ── WORLD 1 (NOVICE): Stages 1-10 — Open maps, no monsters, learn the basics ──
+    [5,  90, 0, 'open',    0, [],                                               false],
+    [6,  88, 0, 'open',    0, [],                                               false],
+    [6,  85, 0, 'open',    1, [],                                               false],
+    [7,  82, 0, 'open',    2, [],                                               false],
+    [7,  80, 1, 'open',    2, [],                                               false],
+    [8,  78, 1, 'cross',   2, [],                                               false],
+    [8,  75, 1, 'cross',   3, [],                                               false],
+    [9,  73, 1, 'cross',   3, [],                                               false],
+    [9,  70, 1, 'islands', 3, [],                                               'hard'],
+    [11, 62, 2, 'islands', 4, [{type:'roam',count:1}],                          'boss'],
+    // ── WORLD 2 (WARRIOR): Stages 11-20 — First monsters, islands & rings ──
+    [9,  72, 2, 'islands', 3, [{type:'roam',count:1}],                          false],
+    [10, 70, 2, 'islands', 4, [{type:'roam',count:1}],                          false],
+    [10, 68, 2, 'ring',    4, [{type:'roam',count:1}],                          false],
+    [11, 66, 2, 'ring',    5, [{type:'roam',count:2}],                          false],
+    [11, 64, 2, 'ring',    5, [{type:'roam',count:2}],                          'hard'],
+    [12, 62, 2, 'cross',   5, [{type:'roam',count:1},{type:'chase',count:1}],   false],
+    [12, 60, 2, 'cross',   6, [{type:'roam',count:1},{type:'chase',count:1}],   false],
+    [12, 58, 3, 'islands', 5, [{type:'chase',count:2}],                         false],
+    [13, 56, 3, 'islands', 6, [{type:'chase',count:2}],                         'hard'],
+    [15, 50, 3, 'maze',    5, [{type:'chase',count:2},{type:'roam',count:2},{type:'patrol',count:1}], 'boss'],
+    // ── WORLD 3 (VETERAN): Stages 21-30 — Mazes & patrol monsters ──
+    [13, 58, 3, 'maze',    4, [{type:'chase',count:2},{type:'roam',count:1}],   false],
+    [13, 56, 3, 'maze',    5, [{type:'chase',count:2},{type:'patrol',count:1}], false],
+    [14, 55, 3, 'ring',    6, [{type:'chase',count:2},{type:'patrol',count:1}], false],
+    [14, 53, 3, 'ring',    6, [{type:'chase',count:3},{type:'patrol',count:1}], 'hard'],
+    [14, 52, 3, 'maze',    7, [{type:'chase',count:3},{type:'patrol',count:1}], false],
+    [15, 52, 3, 'cross',   7, [{type:'chase',count:2},{type:'patrol',count:2}], false],
+    [15, 50, 4, 'cross',   7, [{type:'chase',count:3},{type:'patrol',count:1}], false],
+    [15, 50, 4, 'corridor',3, [{type:'patrol',count:2},{type:'chase',count:2}], 'hard'],
+    [16, 48, 4, 'corridor',4, [{type:'patrol',count:2},{type:'chase',count:2}], false],
+    [18, 42, 4, 'maze',    7, [{type:'chase',count:3},{type:'patrol',count:2},{type:'roam',count:2}], 'boss'],
+    // ── WORLD 4 (ELITE): Stages 31-40 — Speed ramps up, corridors ──
+    [16, 52, 4, 'corridor',4, [{type:'chase',count:3},{type:'patrol',count:2}], false],
+    [16, 50, 4, 'corridor',5, [{type:'chase',count:3},{type:'patrol',count:2}], false],
+    [17, 48, 4, 'islands', 7, [{type:'chase',count:3},{type:'patrol',count:2}], 'hard'],
+    [17, 47, 4, 'maze',    6, [{type:'chase',count:4},{type:'roam',count:1}],   false],
+    [17, 46, 4, 'ring',    7, [{type:'chase',count:4},{type:'patrol',count:1}], false],
+    [18, 46, 4, 'islands', 8, [{type:'chase',count:4},{type:'patrol',count:2}], false],
+    [18, 45, 4, 'islands', 8, [{type:'chase',count:4},{type:'patrol',count:2}], false],
+    [18, 44, 5, 'maze',    7, [{type:'chase',count:5},{type:'patrol',count:2}], 'hard'],
+    [19, 42, 5, 'ring',    8, [{type:'chase',count:5},{type:'patrol',count:2}], false],
+    [20, 38, 5, 'corridor',5, [{type:'chase',count:5},{type:'patrol',count:3},{type:'roam',count:2}], 'boss'],
+    // ── WORLD 5 (MASTER): Stages 41-50 — Max speed introduced ──
+    [18, 46, 5, 'maze',    6, [{type:'chase',count:5},{type:'patrol',count:2}], false],
+    [19, 44, 5, 'maze',    7, [{type:'chase',count:5},{type:'patrol',count:3}], false],
+    [19, 42, 5, 'cross',   8, [{type:'chase',count:5},{type:'patrol',count:2}], 'hard'],
+    [19, 41, 5, 'ring',    8, [{type:'chase',count:6},{type:'patrol',count:2}], false],
+    [20, 40, 5, 'corridor',4, [{type:'chase',count:6},{type:'patrol',count:3}], false],
+    [20, 40, 5, 'maze',    8, [{type:'chase',count:6},{type:'patrol',count:3}], false],
+    [20, 38, 5, 'islands', 8, [{type:'chase',count:6},{type:'patrol',count:3}], 'hard'],
+    [20, 37, 5, 'cross',   9, [{type:'chase',count:7},{type:'patrol',count:3}], false],
+    [20, 36, 5, 'ring',    9, [{type:'chase',count:7},{type:'patrol',count:3}], false],
+    [20, 32, 5, 'maze',    9, [{type:'chase',count:7},{type:'patrol',count:4},{type:'roam',count:2}], 'boss'],
+    // ── WORLD 6 (LEGEND): Stages 51-60 — More food + tighter time ──
+    [21, 36, 5, 'cross',   8, [{type:'chase',count:7},{type:'patrol',count:3}], false],
+    [21, 35, 5, 'islands', 8, [{type:'chase',count:7},{type:'patrol',count:4}], false],
+    [22, 35, 5, 'ring',    9, [{type:'chase',count:8},{type:'patrol',count:3}], false],
+    [22, 34, 5, 'maze',    9, [{type:'chase',count:8},{type:'patrol',count:4}], 'hard'],
+    [22, 33, 5, 'corridor',5, [{type:'chase',count:8},{type:'patrol',count:4}], false],
+    [23, 33, 5, 'cross',   9, [{type:'chase',count:8},{type:'patrol',count:4}], false],
+    [23, 32, 5, 'islands', 9, [{type:'chase',count:9},{type:'patrol',count:4}], false],
+    [23, 31, 5, 'ring',    9, [{type:'chase',count:9},{type:'patrol',count:5}], false],
+    [24, 30, 5, 'maze',    9, [{type:'chase',count:9},{type:'patrol',count:5}], 'hard'],
+    [24, 27, 5, 'maze',   10, [{type:'chase',count:9},{type:'patrol',count:5},{type:'roam',count:2}], 'boss'],
+    // ── WORLD 7 (TITAN): Stages 61-70 — Heavy monster gauntlet ──
+    [22, 34, 5, 'corridor',5, [{type:'chase',count:9},{type:'patrol',count:5}], false],
+    [22, 33, 5, 'cross',   9, [{type:'chase',count:9},{type:'patrol',count:5}], false],
+    [23, 32, 5, 'islands', 9, [{type:'chase',count:10},{type:'patrol',count:5}], false],
+    [23, 31, 5, 'ring',    9, [{type:'chase',count:10},{type:'patrol',count:5}], 'hard'],
+    [24, 30, 5, 'maze',   10, [{type:'chase',count:10},{type:'patrol',count:5}], false],
+    [24, 30, 5, 'corridor',5, [{type:'chase',count:10},{type:'patrol',count:6}], false],
+    [24, 29, 5, 'cross',  10, [{type:'chase',count:10},{type:'patrol',count:6}], false],
+    [25, 28, 5, 'islands',10, [{type:'chase',count:11},{type:'patrol',count:5}], 'hard'],
+    [25, 27, 5, 'ring',   10, [{type:'chase',count:11},{type:'patrol',count:6}], false],
+    [26, 25, 5, 'maze',   10, [{type:'chase',count:11},{type:'patrol',count:6},{type:'roam',count:3}], 'boss'],
+    // ── WORLD 8 (PHANTOM): Stages 71-80 — Time pressure intensifies ──
+    [24, 31, 5, 'corridor',5, [{type:'chase',count:11},{type:'patrol',count:6}], false],
+    [24, 30, 5, 'cross',  10, [{type:'chase',count:11},{type:'patrol',count:6}], false],
+    [25, 29, 5, 'islands',10, [{type:'chase',count:12},{type:'patrol',count:6}], false],
+    [25, 28, 5, 'ring',   10, [{type:'chase',count:12},{type:'patrol',count:7}], 'hard'],
+    [25, 27, 5, 'maze',   10, [{type:'chase',count:12},{type:'patrol',count:7}], false],
+    [26, 27, 5, 'corridor',5, [{type:'chase',count:12},{type:'patrol',count:7}], false],
+    [26, 26, 5, 'cross',  10, [{type:'chase',count:13},{type:'patrol',count:6}], false],
+    [26, 25, 5, 'islands',10, [{type:'chase',count:13},{type:'patrol',count:7}], 'hard'],
+    [27, 24, 5, 'ring',   10, [{type:'chase',count:13},{type:'patrol',count:7}], false],
+    [28, 22, 5, 'maze',   10, [{type:'chase',count:13},{type:'patrol',count:8},{type:'roam',count:3}], 'boss'],
+    // ── WORLD 9 (NEMESIS): Stages 81-90 — Near impossible ──
+    [25, 28, 5, 'corridor',5, [{type:'chase',count:13},{type:'patrol',count:7}], false],
+    [25, 27, 5, 'cross',  10, [{type:'chase',count:14},{type:'patrol',count:7}], false],
+    [26, 26, 5, 'islands',10, [{type:'chase',count:14},{type:'patrol',count:8}], false],
+    [26, 25, 5, 'ring',   10, [{type:'chase',count:14},{type:'patrol',count:8}], 'hard'],
+    [27, 24, 5, 'maze',   10, [{type:'chase',count:15},{type:'patrol',count:8}], false],
+    [27, 23, 5, 'corridor',5, [{type:'chase',count:15},{type:'patrol',count:8}], false],
+    [27, 23, 5, 'cross',  10, [{type:'chase',count:15},{type:'patrol',count:9}], false],
+    [28, 22, 5, 'islands',10, [{type:'chase',count:16},{type:'patrol',count:8}], 'hard'],
+    [28, 21, 5, 'ring',   10, [{type:'chase',count:16},{type:'patrol',count:9}], false],
+    [30, 19, 5, 'maze',   10, [{type:'chase',count:16},{type:'patrol',count:9},{type:'roam',count:4}], 'boss'],
+    // ── WORLD 10 (INFERNO): Stages 91-100 — Ultimate final chapter ──
+    [26, 26, 5, 'corridor',5, [{type:'chase',count:15},{type:'patrol',count:9}], false],
+    [27, 25, 5, 'cross',  10, [{type:'chase',count:16},{type:'patrol',count:9}], false],
+    [27, 24, 5, 'islands',10, [{type:'chase',count:17},{type:'patrol',count:9}], false],
+    [28, 23, 5, 'ring',   10, [{type:'chase',count:17},{type:'patrol',count:10}], 'hard'],
+    [28, 22, 5, 'maze',   10, [{type:'chase',count:18},{type:'patrol',count:10}], false],
+    [29, 21, 5, 'corridor',5, [{type:'chase',count:18},{type:'patrol',count:10}], false],
+    [29, 20, 5, 'cross',  10, [{type:'chase',count:18},{type:'patrol',count:11}], false],
+    [30, 19, 5, 'islands',10, [{type:'chase',count:19},{type:'patrol',count:10}], 'hard'],
+    [30, 18, 5, 'ring',   10, [{type:'chase',count:19},{type:'patrol',count:11}], false],
+    [35, 15, 5, 'maze',   10, [{type:'chase',count:20},{type:'patrol',count:12},{type:'roam',count:5}], 'boss'],
   ];
 
   // Map obstacle templates (relative to 20×20 grid)
@@ -2380,6 +2451,16 @@
   let monsters = [];
 
   // Progress persistence
+  function updateCoinsDisplay() {
+    const el = document.getElementById('hud-coins');
+    if (el) el.textContent = coins;
+  }
+  function addCoins(n) {
+    coins += n;
+    localStorage.setItem('snakeCoins', coins);
+    updateCoinsDisplay();
+  }
+
   function loadStageProgress() {
     try { return JSON.parse(localStorage.getItem('snakeStageProgress') || '{}'); } catch(e) { return {}; }
   }
@@ -2430,7 +2511,11 @@
     let lastRow = -1;
     let currentRowEl = null;
 
-    for (let i = 0; i < STAGES.length; i++) {
+    // Progressive unlock: only show up to end of current world group
+    // e.g. unlocked=0 → show stages 0-9; unlocked=10 → show 0-19
+    const visibleUpTo = Math.min(Math.ceil((unlocked + 1) / 10) * 10 - 1, STAGES.length - 1);
+
+    for (let i = 0; i <= visibleUpTo; i++) {
       const chapterIdx = Math.floor(i / 10);
       const posInChapter = i % 10;
       const rowIdx = Math.floor(posInChapter / STAGES_PER_ROW);
@@ -2513,12 +2598,15 @@
       currentRowEl.appendChild(cell);
     }
 
-    // Scroll to the next-play stage
-    setTimeout(() => {
-      const nextCell = grid.querySelector('.next-play');
-      const target = nextCell || grid.querySelector('.stage-cell:not(.locked):last-of-type');
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 120);
+    // Scroll: always start at top (Stage 1 visible), then scroll to next-play if needed
+    const screenEl = document.getElementById('stage-select-screen');
+    screenEl.scrollTop = 0;
+    if (nextPlayIdx > 0) {
+      setTimeout(() => {
+        const nextCell = grid.querySelector('.next-play');
+        if (nextCell) nextCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
   }
 
   // ── Monster Logic ──────────────────────────────────────────────────────
@@ -2621,25 +2709,88 @@
     const t = Date.now() / 1000;
     monsters.forEach(m => {
       const cx = m.x * CELL + CELL/2, cy = m.y * CELL + CELL/2;
-      const r = CELL * 0.38;
       const colors = { roam: '#ff6600', chase: '#ff2244', patrol: '#ffaa00' };
       const c = colors[m.type];
       const pulse = 0.5 + 0.5 * Math.sin(t * 3 + m.x + m.y);
+      const legWave = Math.sin(t * 7 + m.x * 0.9 + m.y * 0.7);
       ctx.save();
-      ctx.shadowColor = c; ctx.shadowBlur = 8 + pulse * 6;
+      ctx.globalAlpha = 0.88 + pulse * 0.1;
+
+      // --- Spider legs (4 per side, alternating wave) ---
+      ctx.strokeStyle = c;
+      ctx.lineWidth = 1.1;
+      ctx.shadowColor = c; ctx.shadowBlur = 4;
+      const legData = [
+        { ox: -0.15, oy: -0.22, ex: -0.48, ey: -0.42, wave: 1 },
+        { ox: -0.15, oy: -0.05, ex: -0.50, ey:  0.08, wave: -1 },
+        { ox: -0.15, oy:  0.1,  ex: -0.50, ey:  0.28, wave: 1 },
+        { ox: -0.15, oy:  0.22, ex: -0.44, ey:  0.44, wave: -1 },
+        { ox:  0.15, oy: -0.22, ex:  0.48, ey: -0.42, wave: -1 },
+        { ox:  0.15, oy: -0.05, ex:  0.50, ey:  0.08, wave: 1 },
+        { ox:  0.15, oy:  0.1,  ex:  0.50, ey:  0.28, wave: -1 },
+        { ox:  0.15, oy:  0.22, ex:  0.44, ey:  0.44, wave: 1 },
+      ];
+      legData.forEach(l => {
+        const anim = legWave * l.wave * 0.06;
+        const sx = cx + l.ox * CELL, sy = cy + l.oy * CELL;
+        const ex = cx + (l.ex + anim) * CELL, ey = cy + (l.ey + anim * 0.5) * CELL;
+        const midX = (sx + ex) / 2 + l.ox * CELL * 0.3;
+        const midY = (sy + ey) / 2;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.quadraticCurveTo(midX, midY, ex, ey);
+        ctx.stroke();
+      });
+
+      // --- Abdomen (lower oval) ---
+      const abdR = CELL * 0.27;
+      ctx.shadowBlur = 8 + pulse * 6;
       ctx.fillStyle = c;
-      ctx.globalAlpha = 0.82 + pulse * 0.12;
-      // Draw as triangle pointing in move direction
+      ctx.globalAlpha = 0.82 + pulse * 0.1;
       ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.ellipse(cx, cy + CELL * 0.08, abdR, abdR * 0.8, 0, 0, Math.PI * 2);
       ctx.fill();
-      // White eye
-      ctx.fillStyle = '#fff';
-      ctx.globalAlpha = 0.9;
-      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+      // Abdomen pattern
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 0.8; ctx.shadowBlur = 0;
       ctx.beginPath();
-      ctx.arc(cx + (m.dir ? m.dir.x*3 : 0), cy + (m.dir ? m.dir.y*3 : 0), r*0.28, 0, Math.PI*2);
+      ctx.moveTo(cx, cy + CELL*0.01); ctx.lineTo(cx, cy + CELL*0.18);
+      ctx.moveTo(cx - abdR*0.5, cy + CELL*0.08); ctx.lineTo(cx + abdR*0.5, cy + CELL*0.08);
+      ctx.stroke();
+
+      // --- Head (upper circle) ---
+      const hR = CELL * 0.17;
+      ctx.fillStyle = c;
+      ctx.shadowColor = c; ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.arc(cx, cy - CELL * 0.1, hR, 0, Math.PI * 2);
       ctx.fill();
+
+      // --- Eyes (2 glowing dots) ---
+      const eyeOff = hR * 0.42;
+      const pupilDx = m.dir ? m.dir.x * 1.2 : 0, pupilDy = m.dir ? m.dir.y * 1.2 : 0;
+      ctx.shadowColor = '#fff'; ctx.shadowBlur = 5;
+      ctx.fillStyle = '#ffe';
+      [-eyeOff, eyeOff].forEach(eox => {
+        ctx.beginPath();
+        ctx.arc(cx + eox, cy - CELL * 0.13, hR * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      // Pupils
+      ctx.fillStyle = '#000'; ctx.shadowBlur = 0;
+      [-eyeOff, eyeOff].forEach(eox => {
+        ctx.beginPath();
+        ctx.arc(cx + eox + pupilDx, cy - CELL * 0.13 + pupilDy, hR * 0.14, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // --- Fangs (small white V below head) ---
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.9; ctx.shadowBlur = 2; ctx.shadowColor = '#fff';
+      ctx.beginPath();
+      ctx.moveTo(cx - hR*0.28, cy - CELL*0.03); ctx.lineTo(cx - hR*0.4, cy + CELL*0.03);
+      ctx.moveTo(cx + hR*0.28, cy - CELL*0.03); ctx.lineTo(cx + hR*0.4, cy + CELL*0.03);
+      ctx.stroke();
+
       ctx.restore();
     });
   }
@@ -2681,7 +2832,7 @@
     bonusFruit = null; bonusEffect = null;
     comboCount = 0; comboMultiplier = 1; comboPopup = null;
     particles = []; floaters = []; speedTrail = [];
-    goldenFood = null; nextGoldenTime = Date.now() + GOLDEN_SPAWN_INTERVAL;
+    goldenFood = null; nextGoldenTime = 0; // no golden food in stage
     portals = [];
     lastObsMoveTime = 0;
     if (comboTimer) { clearTimeout(comboTimer); comboTimer = null; }
@@ -2764,6 +2915,7 @@
     timerWrap.classList.toggle('urgent', stageTimeLeft <= 10);
     document.getElementById('hud-food').textContent = stageFoodEaten;
     document.getElementById('hud-food-total').textContent = stageFoodTarget;
+    updateCoinsDisplay();
   }
 
   function stageTick() {
@@ -2855,22 +3007,16 @@
       eatSound(4); updateUI();
       snake.pop();
     } else if (head.x===food.x && head.y===food.y) {
-      updateCombo();
-      score += comboMultiplier;
+      score += 1;
       stageFoodEaten++;
       foodEaten++;
-      eatSound(comboMultiplier);
+      eatSound(1);
       updateUI();
       spawnParticles(food.x,food.y,'#ff2a6d');
-      const floatTxt = comboMultiplier>1?`+${comboMultiplier}\xd7`:'+1';
-      spawnFloater(food.x,food.y,floatTxt,comboMultiplier>1?'#ffd700':'#ff2a6d');
+      spawnFloater(food.x,food.y,'+1','#ff2a6d');
       updateStageHUD();
       if (stageFoodEaten >= stageFoodTarget) { endStage(true); return; }
       placeFood();
-    } else if (bonusFruit && head.x===bonusFruit.x && head.y===bonusFruit.y) {
-      applyBonus(bonusFruit.type);
-      bonusFruit = null; scheduleNextBonus();
-      snake.pop();
     } else {
       snake.pop();
     }
@@ -2903,6 +3049,14 @@
       document.getElementById('daily-best-go').style.display = 'none';
       document.getElementById('retry-btn').textContent = '↺ RETRY';
       document.getElementById('daily-go-btn').textContent = '⌂ MENU';
+      // Show "continue for 20 coins" if player has enough
+      const continueBtn = document.getElementById('continue-coins-btn');
+      if (coins >= 20) {
+        continueBtn.textContent = `🪙×20 CONTINUE  (you have: ${coins})`;
+        continueBtn.classList.remove('hidden');
+      } else {
+        continueBtn.classList.add('hidden');
+      }
       document.getElementById('gameover-screen').classList.remove('hidden');
     }
   }
@@ -2916,6 +3070,9 @@
     const starStr = '★'.repeat(stars) + '☆'.repeat(3-stars);
     document.getElementById('stagewin-stars').textContent = starStr;
     document.getElementById('stagewin-label').textContent = 'SCORE: ' + finalScore;
+    // Award 5 coins
+    addCoins(5);
+    document.getElementById('stagewin-coins').textContent = '🪙 +5  (total: ' + coins + ')';
     const isLast = currentStageIdx >= STAGES.length - 1;
     document.getElementById('sw-next-btn').style.display = isLast ? 'none' : '';
     document.getElementById('stagewin-screen').classList.remove('hidden');
@@ -2923,7 +3080,7 @@
 
   // ── Helpers ────────────────────────────────────────────────────────────
   function hideAllOverlays() {
-    ['start-screen','snake-select-screen','stage-select-screen','stagewin-screen','gameover-screen']
+    ['start-screen','snake-select-screen','stage-select-screen','stagewin-screen','gameover-screen','install-screen']
       .forEach(id => document.getElementById(id).classList.add('hidden'));
   }
 
@@ -3081,12 +3238,28 @@
     }
   }
 
-  // Power button cooldown display loop
-  function powerBtnLoop() {
+  // Power button cooldown display — throttled to 250ms (was 60fps RAF)
+  setInterval(() => {
     if (isStageMode && gameState === 'playing') updatePowerBtn();
-    requestAnimationFrame(powerBtnLoop);
-  }
-  powerBtnLoop();
+  }, 250);
+
+  // ── Mute Button ────────────────────────────────────────────────────────
+  (function() {
+    const btn = document.getElementById('mute-btn');
+    function updateMuteBtn() {
+      btn.textContent = isMuted ? '🔇' : '🔊';
+      btn.classList.toggle('muted', isMuted);
+    }
+    updateMuteBtn();
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      isMuted = !isMuted;
+      localStorage.setItem('snakeMuted', isMuted ? '1' : '0');
+      updateMuteBtn();
+      if (isMuted) { stopBgMusic(); }
+      else { ensureAudio(); startBgMusic(); }
+    });
+  })();
 
   // ── Stage Button Listeners ─────────────────────────────────────────────
   document.getElementById('stage-menu-btn').addEventListener('click', e => {
@@ -3111,14 +3284,58 @@
 
   document.getElementById('store-menu-btn').addEventListener('click', e => {
     e.stopPropagation();
-    // show tooltip — coming soon
     const btn = e.currentTarget;
-    btn.textContent = '🚧 COMING SOON';
-    setTimeout(() => { btn.textContent = '🏪 STORE 🔒'; }, 1500);
+    btn.textContent = `🪙 YOU HAVE: ${coins} COINS`;
+    setTimeout(() => { btn.textContent = '🏪 STORE'; }, 2000);
   });
+
+  // Install App screen
+  (function() {
+    const REPO_OWNER = '11Sahar11';
+    const REPO_NAME  = 'Snakegame';
+    const APK_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download/app-debug.apk`;
+
+    document.getElementById('install-menu-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      // Set the APK download link
+      document.getElementById('apk-download-btn').href = APK_URL;
+      hideAllOverlays();
+      document.getElementById('install-screen').classList.remove('hidden');
+    });
+    document.getElementById('install-back-btn').addEventListener('click', e => {
+      e.stopPropagation(); showMainMenu();
+    });
+    document.getElementById('ios-install-pwa').addEventListener('click', e => {
+      e.stopPropagation(); showMainMenu();
+    });
+
+    // PWA install prompt for Android Chrome
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', ev => {
+      ev.preventDefault();
+      deferredPrompt = ev;
+    });
+    document.getElementById('apk-download-btn').addEventListener('click', e => {
+      // If PWA prompt is available (Android Chrome), show it instead
+      if (deferredPrompt) {
+        e.preventDefault();
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+      }
+      // Otherwise the href link downloads the APK
+    });
+  })();
 
   document.getElementById('stage-back-btn').addEventListener('click', e => {
     e.stopPropagation(); showMainMenu();
+  });
+
+  document.getElementById('continue-coins-btn').addEventListener('click', e => {
+    e.stopPropagation(); ensureAudio();
+    if (coins >= 20) {
+      addCoins(-20);
+      startStage(currentStageIdx); // retry same stage for free
+    }
   });
 
   document.getElementById('sw-retry-btn').addEventListener('click', e => {
